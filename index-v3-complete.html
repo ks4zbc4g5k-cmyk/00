@@ -2,2215 +2,249 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="00的实验室">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#f5f0e8">
-<meta name="description" content="00的实验室 - 咖啡饮品研发工作台 · 配方研发 · 品鉴打卡 · 原料库 · 实用工具">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon-192.png">
-<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
-<title>00的实验室</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>来杯冰美式｜咖啡自媒体工作台</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+<script>
+tailwind.config = {
+  darkMode: 'class',
+  theme:{
+    extend:{
+      colors:{
+        coffee:'#6b4f3f',
+        cream:'#f8f3eb'
+      }
+    }
+  }
+}
+</script>
 <style>
-/* ===== CSS Variables ===== */
-:root {
-  --bg: #f5f0e8;
-  --bg-card: #ffffff;
-  --bg-dark: #1c201c;
-  --bg-sidebar: #252a25;
-  --text: #2c2c2c;
-  --text-light: #6b6b6b;
-  --text-muted: #999;
-  --border: #e0dcd5;
-  --accent: #8B6F47;
-  --accent-light: #A0845C;
-  --accent-bg: #f5efe5;
-  --success: #5a8a5a;
-  --warning: #c49050;
-  --danger: #b05040;
-  --radius: 14px;
-  --radius-sm: 8px;
-  --shadow: 0 2px 12px rgba(0,0,0,0.06);
-  --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
-  --nav-h: 52px;
-  --tab-h: 56px;
-}
-body.dark {
-  --bg: #1a1a18;
-  --bg-card: #252522;
-  --bg-dark: #141412;
-  --bg-sidebar: #1c1c1a;
-  --text: #e8e4dc;
-  --text-light: #a0a098;
-  --text-muted: #6a6a64;
-  --border: #3a3a34;
-  --accent: #c4a882;
-  --accent-light: #d4b892;
-  --accent-bg: #2a2820;
-  --shadow: 0 2px 12px rgba(0,0,0,0.2);
-  --shadow-lg: 0 8px 32px rgba(0,0,0,0.35);
-}
-
-* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-html, body { height: 100%; overflow: hidden; }
-body {
-  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-  background: var(--bg); color: var(--text);
-  display: flex; flex-direction: column;
-  transition: background 0.3s, color 0.3s;
-}
-
-/* Top Nav */
-.top-nav {
-  position: fixed; top: 0; left: 0; right: 0; height: var(--nav-h);
-  background: var(--bg-dark); color: #e8e4dc;
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 0 16px; padding-top: env(safe-area-inset-top, 0px);
-  z-index: 100; box-shadow: 0 1px 8px rgba(0,0,0,0.15);
-}
-.menu-btn, .add-btn, .theme-btn {
-  width: 36px; height: 36px; border-radius: 10px; border: none;
-  background: rgba(255,255,255,0.1); color: #e8e4dc;
-  font-size: 18px; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  transition: background 0.2s;
-}
-.menu-btn:active, .add-btn:active, .theme-btn:active { background: rgba(255,255,255,0.2); }
-.nav-center { display: flex; align-items: center; gap: 8px; }
-.app-title { font-size: 17px; font-weight: 700; letter-spacing: 0.5px; }
-.app-ver { font-size: 10px; background: rgba(255,255,255,0.15); padding: 2px 6px; border-radius: 4px; }
-
-/* Sidebar */
-.sidebar {
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  z-index: 200; pointer-events: none; opacity: 0; transition: opacity 0.25s;
-}
-.sidebar.open { pointer-events: auto; opacity: 1; }
-.sidebar-overlay {
-  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0,0,0,0.4); z-index: -1;
-}
-.sidebar-panel {
-  position: absolute; top: 0; left: 0; width: 260px; height: 100%;
-  background: var(--bg-sidebar); color: #e8e4dc;
-  transform: translateX(-100%); transition: transform 0.3s cubic-bezier(0.32,0.72,0,1);
-  display: flex; flex-direction: column;
-  padding-top: env(safe-area-inset-top, 0px); z-index: 1;
-}
-.sidebar.open .sidebar-panel { transform: translateX(0); }
-.sidebar-header { padding: 24px 20px 16px; border-bottom: 1px solid rgba(255,255,255,0.06); }
-.sidebar-header h2 { font-size: 18px; font-weight: 700; }
-.sidebar-header p { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
-.sidebar-nav { flex: 1; padding: 12px; overflow-y: auto; }
-.nav-item {
-  display: flex; align-items: center; gap: 12px;
-  padding: 12px 14px; color: #e8e4dc; text-decoration: none;
-  border-radius: 10px; font-size: 15px;
-  transition: all 0.2s; margin-bottom: 3px; opacity: 0.65;
-}
-.nav-item:hover, .nav-item:active { background: rgba(255,255,255,0.08); opacity: 0.9; }
-.nav-item.active { background: rgba(255,255,255,0.12); opacity: 1; }
-.nav-icon { font-size: 20px; width: 28px; text-align: center; }
-.nav-badge { font-size: 11px; background: var(--accent); color: white; padding: 2px 8px; border-radius: 10px; margin-left: auto; }
-.sidebar-footer { padding: 16px; border-top: 1px solid rgba(255,255,255,0.06); }
-.sidebar-footer button {
-  width: 100%; padding: 10px; border: 1px solid rgba(255,255,255,0.12);
-  background: transparent; color: #e8e4dc; border-radius: 8px;
-  font-size: 13px; cursor: pointer; margin-bottom: 8px; transition: all 0.2s;
-}
-.sidebar-footer button:active { background: rgba(255,255,255,0.08); }
-.sidebar-footer button.active { background: rgba(90,138,90,0.3); border-color: var(--success); color: #8cc88c; }
-.storage-info { font-size: 11px; color: rgba(255,255,255,0.35); text-align: center; }
-
-/* Bottom Tab Bar */
-.bottom-tabs {
-  position: fixed; bottom: 0; left: 0; right: 0;
-  height: var(--tab-h); background: var(--bg-card);
-  display: flex; border-top: 1px solid var(--border);
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-  z-index: 90; box-shadow: 0 -1px 8px rgba(0,0,0,0.05);
-}
-body.dark .bottom-tabs { box-shadow: 0 -1px 8px rgba(0,0,0,0.2); }
-.tab-btn {
-  flex: 1; display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  border: none; background: none; cursor: pointer;
-  color: var(--text-muted); font-size: 10px; font-weight: 500;
-  transition: color 0.2s; gap: 2px;
-}
-.tab-btn .tab-icon { font-size: 22px; transition: transform 0.2s; }
-.tab-btn.active { color: var(--accent); }
-.tab-btn.active .tab-icon { transform: scale(1.15); }
-.tab-btn-center {
-  flex: 1; display: flex; align-items: center; justify-content: center;
-}
-.tab-btn-fab {
-  width: 44px; height: 44px; border-radius: 50%;
-  background: var(--accent); color: white; border: none;
-  font-size: 24px; cursor: pointer; display: flex;
-  align-items: center; justify-content: center;
-  box-shadow: 0 4px 16px rgba(139,111,71,0.35);
-  transition: transform 0.2s, box-shadow 0.2s;
-  margin-bottom: 8px;
-}
-.tab-btn-fab:active { transform: scale(0.9); box-shadow: 0 2px 8px rgba(139,111,71,0.25); }
-
-/* Main Content */
-.main-content {
-  flex: 1; margin-top: var(--nav-h);
-  padding: 16px; padding-bottom: calc(var(--tab-h) + env(safe-area-inset-bottom, 0px) + 16px);
-  overflow-y: auto; -webkit-overflow-scrolling: touch;
-}
-.page-title { font-size: 24px; font-weight: 800; margin-bottom: 4px; }
-.page-subtitle { font-size: 13px; color: var(--text-light); margin-bottom: 20px; }
-
-/* Cards */
-.card {
-  background: var(--bg-card); border-radius: var(--radius);
-  box-shadow: var(--shadow); border: 1px solid var(--border);
-  padding: 16px; margin-bottom: 12px; transition: box-shadow 0.2s;
-}
-.card:active { box-shadow: var(--shadow-lg); }
-
-/* Stats */
-.stats-row { display: flex; gap: 10px; margin-bottom: 20px; overflow-x: auto; padding-bottom: 4px; }
-.stat-chip {
-  flex-shrink: 0; background: var(--bg-card); border-radius: var(--radius-sm);
-  box-shadow: var(--shadow); border: 1px solid var(--border);
-  padding: 12px 16px; text-align: center; min-width: 80px;
-}
-.stat-chip-num { font-size: 22px; font-weight: 800; color: var(--accent); }
-.stat-chip-label { font-size: 11px; color: var(--text-light); margin-top: 2px; }
-
-/* Recipe Card */
-.recipe-card {
-  background: var(--bg-card); border-radius: var(--radius);
-  box-shadow: var(--shadow); border: 1px solid var(--border);
-  overflow: hidden; margin-bottom: 12px; cursor: pointer; transition: all 0.2s;
-}
-.recipe-card:active { transform: scale(0.98); }
-.recipe-card-img { width: 100%; height: 180px; object-fit: cover; background: var(--bg); }
-.recipe-card-body { padding: 14px; }
-.recipe-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
-.recipe-card-title { font-size: 16px; font-weight: 700; flex: 1; line-height: 1.3; }
-.recipe-card-rating { font-size: 13px; color: #d4a040; letter-spacing: 1px; flex-shrink: 0; margin-left: 8px; }
-.recipe-card-meta { display: flex; align-items: center; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
-.recipe-card-tag { font-size: 11px; padding: 3px 8px; border-radius: 12px; font-weight: 500; }
-.tag-coffee { background: #f0e8dc; color: #8b6f47; }
-.tag-tea { background: #e8f0e8; color: #5a8a5a; }
-.tag-milk { background: #e8ecf0; color: #5a7a9a; }
-.tag-special { background: #f0e0f0; color: #8a5a8a; }
-.tag-season { background: #fce8e0; color: #c07050; }
-.recipe-card-date { font-size: 12px; color: var(--text-light); }
-
-/* Gallery Grid */
-.gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-.gallery-item {
-  aspect-ratio: 1; border-radius: var(--radius-sm); overflow: hidden;
-  cursor: pointer; position: relative; background: var(--bg);
-}
-.gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.2s; }
-.gallery-item:active img { transform: scale(1.05); }
-.gallery-item-overlay {
-  position: absolute; bottom: 0; left: 0; right: 0;
-  padding: 6px 8px; background: linear-gradient(transparent, rgba(0,0,0,0.6));
-  color: white; font-size: 11px; font-weight: 500;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-
-/* Waterfall */
-.waterfall { columns: 2; column-gap: 10px; }
-.waterfall .card { break-inside: avoid; display: inline-block; width: 100%; }
-
-/* Note Card */
-.note-card {
-  background: var(--bg-card); border-radius: var(--radius);
-  box-shadow: var(--shadow); border: 1px solid var(--border);
-  padding: 16px; margin-bottom: 12px; border-left: 4px solid var(--accent);
-}
-.note-card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
-.note-card-title { font-size: 16px; font-weight: 700; line-height: 1.3; }
-.note-card-date { font-size: 11px; color: var(--text-light); flex-shrink: 0; }
-.note-card-body { font-size: 14px; color: var(--text); line-height: 1.6; white-space: pre-wrap; }
-.note-card-tags { margin-top: 10px; display: flex; gap: 6px; flex-wrap: wrap; }
-.note-card-actions { margin-top: 12px; display: flex; gap: 8px; }
-
-/* Filter Bar */
-.filter-bar { display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 4px; }
-.filter-chip {
-  flex-shrink: 0; padding: 8px 16px; border-radius: 20px; font-size: 13px;
-  font-weight: 500; cursor: pointer; border: 1px solid var(--border);
-  background: var(--bg-card); color: var(--text-light); transition: all 0.2s;
-}
-.filter-chip.active { background: var(--accent); color: white; border-color: var(--accent); }
-.filter-chip:active { transform: scale(0.95); }
-
-/* Buttons */
-.btn {
-  padding: 10px 20px; border: none; border-radius: 10px; font-size: 14px;
-  font-weight: 500; cursor: pointer; transition: all 0.2s;
-  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-}
-.btn-primary { background: var(--accent); color: white; }
-.btn-primary:active { opacity: 0.8; }
-.btn-secondary { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
-.btn-secondary:active { background: var(--border); }
-.btn-danger { background: var(--danger); color: white; }
-.btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 8px; }
-.btn-block { width: 100%; }
-.btn-outline { background: transparent; border: 1px solid var(--accent); color: var(--accent); }
-
-/* Modal */
-.modal-overlay {
-  display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0,0,0,0.5); z-index: 300;
-  justify-content: center; align-items: flex-end;
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-}
-.modal-overlay.active { display: flex; }
-.modal {
-  background: var(--bg-card); border-radius: 20px 20px 0 0;
-  width: 100%; max-width: 600px; max-height: 85vh;
-  box-shadow: 0 -8px 32px rgba(0,0,0,0.15);
-  display: flex; flex-direction: column;
-  animation: slideUp 0.25s cubic-bezier(0.32,0.72,0,1);
-}
-@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-.modal-header {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 18px 20px; border-bottom: 1px solid var(--border); flex-shrink: 0;
-}
-.modal-header h2 { font-size: 18px; font-weight: 700; }
-.modal-close {
-  background: none; border: none; font-size: 22px; cursor: pointer;
-  color: var(--text-light); width: 36px; height: 36px; border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-}
-.modal-close:active { background: var(--bg); }
-.modal-body { padding: 20px; overflow-y: auto; flex: 1; }
-.modal-footer { display: flex; gap: 10px; padding: 14px 20px; border-top: 1px solid var(--border); flex-shrink: 0; }
-.modal-footer .btn { flex: 1; }
-
-/* Forms */
-.form-group { margin-bottom: 16px; }
-.form-group label { display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
-.form-group input, .form-group select, .form-group textarea {
-  width: 100%; padding: 12px 14px; border: 1px solid var(--border);
-  border-radius: 10px; font-size: 15px; font-family: inherit;
-  background: var(--bg-card); color: var(--text); transition: border-color 0.2s;
-  -webkit-appearance: none;
-}
-.form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--accent); }
-.form-group textarea { resize: vertical; min-height: 100px; }
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-.form-inline { display: flex; gap: 8px; align-items: center; }
-.form-inline input { flex: 1; }
-
-/* Rating */
-.rating-input { display: flex; gap: 4px; font-size: 26px; }
-.rating-star { cursor: pointer; color: #ddd; transition: color 0.15s; }
-.rating-star.active { color: #d4a040; }
-
-/* Image Upload */
-.image-upload-area {
-  border: 2px dashed var(--border); border-radius: 12px;
-  padding: 32px 20px; text-align: center; cursor: pointer;
-  transition: all 0.2s; background: var(--bg);
-}
-.image-upload-area:active { border-color: var(--accent); background: var(--accent-bg); }
-.image-preview { width: 100%; max-height: 200px; object-fit: cover; border-radius: 10px; margin-top: 12px; }
-
-/* Tags */
-.tag { display: inline-block; padding: 4px 10px; border-radius: 16px; font-size: 12px; font-weight: 500; }
-
-/* Empty State */
-.empty-state { text-align: center; padding: 60px 20px; color: var(--text-light); }
-.empty-state-icon { font-size: 52px; margin-bottom: 16px; opacity: 0.25; }
-.empty-state-text { font-size: 15px; margin-bottom: 6px; }
-.empty-state-hint { font-size: 13px; opacity: 0.7; }
-
-/* Toast */
-.toast {
-  position: fixed; bottom: calc(var(--tab-h) + 24px + env(safe-area-inset-bottom, 0px));
-  left: 50%; transform: translateX(-50%) translateY(20px);
-  background: var(--text); color: var(--bg);
-  padding: 12px 24px; border-radius: 10px; font-size: 14px;
-  z-index: 400; opacity: 0; transition: all 0.3s; pointer-events: none; white-space: nowrap;
-}
-.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-/* Radar Chart Canvas */
-.radar-container { text-align: center; margin: 16px 0; }
-.radar-container canvas { max-width: 100%; }
-
-/* Calendar */
-.calendar { width: 100%; }
-.calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-.calendar-title { font-size: 18px; font-weight: 700; }
-.calendar-nav { display: flex; gap: 4px; }
-.calendar-nav button {
-  width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border);
-  background: var(--bg-card); color: var(--text); cursor: pointer; font-size: 16px;
-}
-.calendar-nav button:active { background: var(--accent-bg); }
-.calendar-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; margin-bottom: 8px; }
-.calendar-weekdays span { font-size: 12px; color: var(--text-muted); font-weight: 600; padding: 4px 0; }
-.calendar-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
-.calendar-day {
-  aspect-ratio: 1; border-radius: 10px; display: flex; flex-direction: column;
-  align-items: center; justify-content: center; cursor: pointer;
-  font-size: 13px; font-weight: 500; position: relative;
-  transition: background 0.2s; border: 1px solid transparent;
-}
-.calendar-day:hover, .calendar-day:active { background: var(--accent-bg); border-color: var(--accent); }
-.calendar-day.other-month { color: var(--text-muted); opacity: 0.4; }
-.calendar-day.today { border: 2px solid var(--accent); font-weight: 700; }
-.calendar-day.has-log { background: var(--accent-bg); }
-.calendar-day .day-stamp { font-size: 16px; margin-top: 1px; }
-
-/* Stamp */
-.stamp-card {
-  display: inline-block; border: 2px dashed var(--accent);
-  border-radius: var(--radius); padding: 16px; text-align: center;
-  background: var(--accent-bg); margin: 4px;
-}
-.stamp-card .stamp-icon { font-size: 32px; margin-bottom: 8px; }
-.stamp-card .stamp-name { font-size: 13px; font-weight: 600; }
-.stamp-card .stamp-date { font-size: 11px; color: var(--text-light); }
-.stamp-card.locked { opacity: 0.35; filter: grayscale(1); }
-
-/* Achievement */
-.achievement-card {
-  display: flex; align-items: center; gap: 12px;
-  padding: 14px; border-radius: var(--radius);
-  background: var(--bg-card); border: 1px solid var(--border);
-  margin-bottom: 8px; box-shadow: var(--shadow);
-}
-.achievement-icon { font-size: 36px; flex-shrink: 0; }
-.achievement-info { flex: 1; }
-.achievement-name { font-size: 15px; font-weight: 700; }
-.achievement-desc { font-size: 12px; color: var(--text-light); margin-top: 2px; }
-.achievement-progress { height: 4px; background: var(--border); border-radius: 2px; margin-top: 6px; }
-.achievement-progress-bar { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.3s; }
-.achievement-card.unlocked { border-color: var(--accent); }
-.achievement-card.locked { opacity: 0.5; }
-
-/* Tool Cards */
-.tool-card {
-  background: var(--bg-card); border-radius: var(--radius);
-  box-shadow: var(--shadow); border: 1px solid var(--border);
-  padding: 20px; margin-bottom: 12px; cursor: pointer; transition: all 0.2s;
-  display: flex; align-items: center; gap: 14px;
-}
-.tool-card:active { transform: scale(0.98); }
-.tool-card-icon { font-size: 36px; flex-shrink: 0; }
-.tool-card-body { flex: 1; }
-.tool-card-name { font-size: 16px; font-weight: 700; }
-.tool-card-desc { font-size: 13px; color: var(--text-light); margin-top: 4px; }
-
-/* Recipe Detail */
-.recipe-detail-img { width: 100%; max-height: 280px; object-fit: cover; border-radius: var(--radius); margin-bottom: 16px; }
-.recipe-detail-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; align-items: center; }
-.recipe-ingredients {
-  background: var(--accent-bg); border-radius: 12px; padding: 16px; margin-bottom: 16px;
-}
-.recipe-ingredients h4 { font-size: 14px; font-weight: 700; margin-bottom: 10px; color: var(--accent); }
-.ingredient-line { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px dashed var(--border); font-size: 14px; }
-.ingredient-line:last-child { border-bottom: none; }
-.recipe-steps { font-size: 14px; line-height: 1.8; white-space: pre-wrap; background: var(--bg); border-radius: 12px; padding: 16px; }
-
-/* Version tabs */
-.version-tabs { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
-.version-tab {
-  padding: 6px 14px; border-radius: 16px; font-size: 12px; font-weight: 600;
-  border: 1px solid var(--border); background: var(--bg-card);
-  color: var(--text-light); cursor: pointer; transition: all 0.2s;
-}
-.version-tab.active { background: var(--accent); color: white; border-color: var(--accent); }
-
-/* Cost table */
-.cost-table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 13px; }
-.cost-table th, .cost-table td { padding: 8px 10px; border-bottom: 1px solid var(--border); text-align: left; }
-.cost-table th { font-weight: 600; color: var(--text-light); font-size: 12px; }
-.cost-table .total-row { font-weight: 700; color: var(--accent); }
-
-/* Badge */
-.badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
-.badge-danger { background: #fce8e0; color: var(--danger); }
-.badge-success { background: #e0f0e0; color: var(--success); }
-.badge-warning { background: #faf0e0; color: var(--warning); }
-
-/* Section header */
-.section-title { font-size: 16px; font-weight: 700; margin: 20px 0 12px; display: flex; align-items: center; gap: 8px; }
-
-/* Scrollbar */
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-
-/* Collection grid */
-.collection-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-.collection-item {
-  aspect-ratio: 1; border-radius: var(--radius); overflow: hidden;
-  position: relative; border: 2px solid var(--border);
-  display: flex; flex-direction: column; align-items: center;
-  justify-content: center; background: var(--bg-card);
-  cursor: pointer; transition: all 0.2s;
-}
-.collection-item:active { transform: scale(0.95); }
-.collection-item.locked { filter: grayscale(1); opacity: 0.4; }
-.collection-item .coll-icon { font-size: 40px; }
-.collection-item .coll-name { font-size: 11px; margin-top: 4px; text-align: center; }
-
-/* Dashboard hero */
-.hero-card {
-  background: linear-gradient(135deg, var(--accent), var(--accent-light));
-  color: white; border-radius: var(--radius); padding: 24px;
-  margin-bottom: 20px; box-shadow: var(--shadow-lg);
-}
-.hero-card h2 { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
-.hero-card p { font-size: 14px; opacity: 0.85; }
-
-/* Compare view */
-.compare-container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-.compare-panel {
-  border: 1px solid var(--border); border-radius: var(--radius);
-  padding: 12px; background: var(--bg-card);
-}
-.compare-panel h4 { font-size: 14px; margin-bottom: 8px; }
-
-/* Sharing card canvas container */
-.share-preview { text-align: center; margin: 16px 0; }
-.share-preview canvas { max-width: 100%; border-radius: var(--radius); box-shadow: var(--shadow); }
-
-/* Quick actions row */
-.quick-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 20px; }
-.quick-action {
-  display: flex; flex-direction: column; align-items: center; gap: 6px;
-  padding: 14px 8px; border-radius: var(--radius); cursor: pointer;
-  background: var(--bg-card); border: 1px solid var(--border);
-  transition: all 0.2s; box-shadow: var(--shadow);
-}
-.quick-action:active { transform: scale(0.95); }
-.quick-action .qa-icon { font-size: 28px; }
-.quick-action .qa-text { font-size: 11px; font-weight: 500; color: var(--text-light); }
-
-/* Map placeholder */
-.map-placeholder {
-  background: var(--accent-bg); border-radius: var(--radius);
-  padding: 40px; text-align: center; border: 2px dashed var(--border);
-}
-
-/* Report chart */
-.report-chart { text-align: center; padding: 20px 0; }
+*{ -webkit-tap-highlight-color:transparent; }
+body{ font-family:system-ui, -apple-system; }
+.slide-enter{ transform:translateX(-100%); }
 </style>
 </head>
-<body>
-
-<!-- Top Navigation -->
-<header class="top-nav">
-  <button class="menu-btn" onclick="toggleSidebar()">☰</button>
-  <div class="nav-center">
-    <span style="font-size:20px;">🧪</span>
-    <span class="app-title">00的实验室</span>
-    <span class="app-ver">v3.0</span>
+<body class="bg-cream dark:bg-gray-900 dark:text-gray-100 min-h-screen transition-colors duration-300">
+<div id="app">
+<!--顶部导航-->
+<header class="sticky top-0 z-40 bg-white/80 dark:bg-gray-800/80 backdrop-blur border-b border-gray-200 dark:border-gray-700 px-4 py-3 flex items-center justify-between">
+  <button onclick="toggleSidebar()" class="w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+    <i class="fa fa-bars text-lg"></i>
+  </button>
+  <div class="flex items-center gap-2">
+    <span class="text-xl">☕</span>
+    <h1 class="font-semibold text-lg">来杯冰美式｜咖啡自媒体工作台</h1>
+    <span class="text-xs px-1.5 py-0.5 rounded bg-gray-200 dark:bg-gray-600">v3.0</span>
   </div>
-  <button class="theme-btn" onclick="toggleTheme()" id="theme-btn">🌙</button>
+  <button onclick="toggleDark()" class="w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+    <i class="fa fa-moon-o dark:hidden"></i>
+    <i class="fa fa-sun-o hidden dark:inline"></i>
+  </button>
 </header>
 
-<!-- Sidebar -->
-<aside class="sidebar" id="sidebar">
-  <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
-  <div class="sidebar-panel">
-    <div class="sidebar-header">
-      <h2>🧪 00的实验室</h2>
-      <p>咖啡饮品研发工作台</p>
+<!--侧边栏-->
+<div id="sidebar" class="fixed inset-0 z-50">
+  <div onclick="toggleSidebar()" class="absolute inset-0 bg-black/40"></div>
+  <div class="absolute left-0 top-0 bottom-0 w-[260px] bg-white dark:bg-gray-800 shadow-xl p-4 overflow-y-auto">
+    <div class="font-bold text-base mb-6 mt-2 text-coffee dark:text-white">导航菜单</div>
+    <div class="space-y-1">
+      <div onclick="switchPage('plan')" class="menu-item flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+        <i class="fa fa-calendar-check-o w-5 text-center"></i>
+        <span>每日计划</span>
+      </div>
+      <div onclick="switchPage('inspire')" class="menu-item flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+        <i class="fa fa-lightbulb-o w-5 text-center"></i>
+        <span>咖啡灵感</span>
+      </div>
+      <div onclick="switchPage('hot')" class="menu-item flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+        <i class="fa fa-fire w-5 text-center"></i>
+        <span>爆款咖啡</span>
+      </div>
+      <div onclick="switchPage('note')" class="menu-item flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer">
+        <i class="fa fa-sticky-note-o w-5 text-center"></i>
+        <span>备忘录</span>
+      </div>
     </div>
-    <nav class="sidebar-nav" id="sidebar-nav"></nav>
-    <div class="sidebar-footer">
-      <button onclick="toggleSync()" id="btn-sync">☁️ 开启同步</button>
-      <button onclick="manualSync()">🔄 手动同���</button>
-      <button onclick="exportData()">📤 导出数据</button>
-      <button onclick="importData()">📥 导入数据</button>
-      <input type="file" id="import-file" accept=".json" style="display:none" onchange="handleImport(event)">
-      <p class="storage-info" id="storage-info"></p>
-    </div>
-  </div>
-</aside>
-
-<!-- Main Content -->
-<main class="main-content" id="main-content"></main>
-
-<!-- Bottom Tab Bar -->
-<nav class="bottom-tabs" id="bottom-tabs"></nav>
-
-<!-- Modal -->
-<div class="modal-overlay" id="modal-overlay">
-  <div class="modal" id="modal">
-    <div class="modal-header">
-      <h2 id="modal-title"></h2>
-      <button class="modal-close" onclick="closeModal()">✕</button>
-    </div>
-    <div class="modal-body" id="modal-body"></div>
-    <div class="modal-footer" id="modal-footer"></div>
   </div>
 </div>
 
+<!--主内容区域-->
+<main class="p-4 max-w-2xl mx-auto">
+  <!--每日计划页-->
+  <div id="page-plan" class="page">
+    <h2 class="text-xl font-bold mb-4 flex items-center gap-2"><i class="fa fa-calendar-check-o"></i>每日计划</h2>
+    <div class="flex gap-2 mb-4">
+      <input id="input-plan" class="flex-1 border dark:border-gray-600 dark:bg-gray-800 rounded-lg px-3 py-2 outline-none" placeholder="添加今日任务...">
+      <button onclick="addPlan()" class="px-4 bg-coffee text-white rounded-lg">添加</button>
+    </div>
+    <div id="list-plan" class="space-y-2"></div>
+  </div>
+
+  <!--咖啡灵感页-->
+  <div id="page-inspire" class="page hidden">
+    <h2 class="text-xl font-bold mb-4 flex items-center gap-2"><i class="fa fa-lightbulb-o"></i>咖啡灵感</h2>
+    <div class="flex gap-2 mb-4">
+      <input id="input-inspire" class="flex-1 border dark:border-gray-600 dark:bg-gray-800 rounded-lg px-3 py-2 outline-none" placeholder="新品构思 / 风味创意 /饮品命名...">
+      <button onclick="addInspire()" class="px-4 bg-coffee text-white rounded-lg">添加</button>
+    </div>
+    <div id="list-inspire" class="space-y-2"></div>
+  </div>
+
+  <!--爆款咖啡页-->
+  <div id="page-hot" class="page hidden">
+    <h2 class="text-xl font-bold mb-4 flex items-center gap-2"><i class="fa fa-fire"></i>爆款咖啡</h2>
+    <div class="flex gap-2 mb-4">
+      <input id="input-hot" class="flex-1 border dark:border-gray-600 dark:bg-gray-800 rounded-lg px-3 py-2 outline-none" placeholder="热门配方 /短视频选题 /脚本思路">
+      <button onclick="addHot()" class="px-4 bg-coffee text-white rounded-lg">添加</button>
+    </div>
+    <div id="list-hot" class="space-y-2"></div>
+  </div>
+
+  <!--备忘录页-->
+  <div id="page-note" class="page hidden">
+    <h2 class="text-xl font-bold mb-4 flex items-center gap-2"><i class="fa fa-sticky-note-o"></i>备忘录</h2>
+    <textarea id="text-note" class="w-full min-h-[320px] border dark:border-gray-600 dark:bg-gray-800 rounded-lg p-3 outline-none" placeholder="原料成本、供应商、账号复盘、杂项笔记..."></textarea>
+    <button onclick="saveNote()" class="mt-3 px-4 bg-coffee text-white rounded-lg">保存备忘录</button>
+  </div>
+</main>
+</div>
+
 <script>
-// ==================== DATA MODEL ====================
-const DB_KEY = 'lab00_db_v3';
-const CLOUD_API = 'https://lab00-api.你的用户名.workers.dev/api/sync';
-const CLOUD_KEY = 'lab00-secret-key-2026';
-let syncEnabled = false;
-let lastSyncTime = null;
-let currentRating = 0;
-let currentPhotoData = '';
-let currentPage = 'dashboard';
-let currentFilter = '';
-let calendarYear, calendarMonth;
-
-// Categories
-const RECIPE_CATEGORIES = [
-  { key: 'americano', name: '美式/黑咖', icon: '☕' },
-  { key: 'latte', name: '奶咖/拿铁', icon: '🥛' },
-  { key: 'special', name: '特调/创意', icon: '🍹' },
-  { key: 'nocoffee', name: '无咖啡因', icon: '🫖' },
-];
-
-const INGREDIENT_CATEGORIES = [
-  { key: 'coffee_base', name: '基底咖啡', icon: '☕' },
-  { key: 'tea_base', name: '茶汤基底', icon: '🍵' },
-  { key: 'milk', name: '奶类', icon: '🥛' },
-  { key: 'syrup', name: '糖浆/果泥', icon: '🍯' },
-  { key: 'spice', name: '香料辅料', icon: '🌿' },
-  { key: 'topping', name: '装饰Topping', icon: '🍒' },
-];
-
-const FLAVOR_DIMENSIONS = ['酸度','苦感','甜感','顺滑度','香气','回味','层次感','外观颜值'];
-const ALLERGEN_LIST = ['牛奶','大豆','坚果','花生','鸡蛋','麸质','芒果','菠萝'];
-
-const NAV_ITEMS = [
-  { page: 'dashboard', icon: '🏠', label: '首页' },
-  { page: 'recipes', icon: '🧪', label: '配方研发' },
-  { page: 'tasting', icon: '☕', label: '品鉴打卡' },
-  { page: 'ingredients', icon: '📦', label: '原料库' },
-  { page: 'tools', icon: '🔧', label: '实用工具' },
-  { page: 'community', icon: '💡', label: '灵感社区' },
-];
-
-const TAB_ITEMS = [
-  { page: 'dashboard', icon: '🏠', label: '首页' },
-  { page: 'recipes', icon: '🧪', label: '配方' },
-  { page: 'tasting', icon: '☕', label: '打卡' },
-  { page: 'ingredients', icon: '📦', label: '原料' },
-  { page: 'tools', icon: '🔧', label: '工具' },
-];
-
-const ACHIEVEMENTS = [
-  { id: 'cup_10', icon: '☕', name: '品鉴新手', desc: '累计打卡10杯', target: 10 },
-  { id: 'cup_50', icon: '🫗', name: '咖啡达人', desc: '累计打卡50杯', target: 50 },
-  { id: 'cup_100', icon: '🏆', name: '品鉴大师', desc: '累计打卡100杯', target: 100 },
-  { id: 'shop_5', icon: '🏪', name: '探店新手', desc: '打卡5家不同门店', target: 5 },
-  { id: 'shop_20', icon: '🗺️', name: '城市探索者', desc: '打卡20家不同门店', target: 20 },
-  { id: 'recipe_5', icon: '📝', name: '研发学徒', desc: '创建5个配方', target: 5 },
-  { id: 'recipe_20', icon: '🧪', name: '研发大师', desc: '创建20个配方', target: 20 },
-  { id: 'season_all', icon: '🌸', name: '四季尝遍', desc: '打卡过春夏秋冬四季饮品', target: 4 },
-];
-
-// Database
-let db = {
-  recipes: [],
-  tasting_logs: [],
-  ingredients: [],
-  photos: [],
-  notes: [],
-  stamps: [],
-  settings: { theme: 'light' },
-  tools_data: { trial_logs: [] },
+// ========= 数据存储 =========
+const STORAGE_KEY = "coffee-workspace-data";
+let data = {
+  plan:[],
+  inspire:[],
+  hot:[],
+  note:""
 };
 
-// ==================== HELPERS ====================
-function genId() { return Date.now().toString(36) + Math.random().toString(36).substr(2, 5); }
-function fmtDate(ts) { const d = new Date(ts); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
-function fmtDateTime(ts) { const d = new Date(ts); return fmtDate(ts) + ` ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; }
-function fmtMonth(y, m) { return `${y}年${m+1}月`; }
-
-// ==================== STORAGE ====================
-function loadDB() {
-  const saved = localStorage.getItem(DB_KEY);
-  if (saved) { try { db = JSON.parse(saved); } catch(e) {} }
-  const syncConfig = localStorage.getItem('lab00_sync_config');
-  if (syncConfig) { try { const c = JSON.parse(syncConfig); syncEnabled = c.enabled || false; lastSyncTime = c.lastSync || null; } catch(e) {} }
-  if (db.settings && db.settings.theme === 'dark') document.body.classList.add('dark');
-}
-
-function saveDB() {
-  localStorage.setItem(DB_KEY, JSON.stringify(db));
-  updateStorageInfo();
-  if (syncEnabled) autoSync();
-}
-
-function updateStorageInfo() {
-  const size = new Blob([JSON.stringify(db)]).size;
-  const el = document.getElementById('storage-info');
-  if (el) {
-    let info = `本地 ${(size/1024).toFixed(1)}KB`;
-    if (syncEnabled) { info += ' · 同步中'; if (lastSyncTime) { const d = new Date(lastSyncTime); info += ` · ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`; } }
-    el.textContent = info;
+// 读取本地存储
+function loadData(){
+  const str = localStorage.getItem(STORAGE_KEY);
+  if(str){
+    try{ data = JSON.parse(str); }catch(e){}
   }
+  renderAll();
+}
+function saveData(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
-// ==================== SYNC ====================
-async function syncToCloud() { if (!syncEnabled) return; try { const res = await fetch(CLOUD_API, { method:'POST', headers:{'Content-Type':'application/json','X-API-Key':CLOUD_KEY}, body:JSON.stringify({user:'default',data:db}) }); if (res.ok) { lastSyncTime = Date.now(); localStorage.setItem('lab00_sync_config', JSON.stringify({enabled:true,lastSync:lastSyncTime})); updateStorageInfo(); } } catch(e) {} }
-async function syncFromCloud() {
-  if (!syncEnabled) return;
-  try {
-    const res = await fetch(`${CLOUD_API}?user=default`, { headers:{'X-API-Key':CLOUD_KEY} });
-    if (!res.ok) return;
-    const result = await res.json();
-    if (result.data) {
-      const cloudTime = new Date(result.updatedAt).getTime();
-      const localConfig = localStorage.getItem('lab00_sync_config');
-      let localTime = localConfig ? (JSON.parse(localConfig).lastSync || 0) : 0;
-      if (cloudTime > localTime) { db = result.data; saveDB(); lastSyncTime = cloudTime; localStorage.setItem('lab00_sync_config', JSON.stringify({enabled:true,lastSync:lastSyncTime})); return true; }
-      else syncToCloud();
-    }
-  } catch(e) {}
-  return false;
+// ========= 页面切换 =========
+function switchPage(name){
+  document.querySelectorAll(".page").forEach(p=>p.classList.add("hidden"));
+  document.getElementById("page-"+name).classList.remove("hidden");
+  toggleSidebar();
 }
-let syncTimer = null;
-function autoSync() { clearTimeout(syncTimer); syncTimer = setTimeout(syncToCloud, 1000); }
+function toggleSidebar(){
+  const box = document.getElementById("sidebar");
+  box.style.display = box.style.display==='none' ? 'block' : 'none';
+}
+// 初始化侧边栏状态
+document.getElementById("sidebar").style.display = 'none';
 
-function toggleSync() {
-  const btn = document.getElementById('btn-sync');
-  if (syncEnabled) {
-    syncEnabled = false;
-    localStorage.setItem('lab00_sync_config', JSON.stringify({enabled:false,lastSync:lastSyncTime}));
-    btn.textContent = '☁️ 开启同步'; btn.classList.remove('active');
-    updateStorageInfo(); showToast('云端同步已关闭');
-  } else {
-    syncEnabled = true;
-    localStorage.setItem('lab00_sync_config', JSON.stringify({enabled:true,lastSync:lastSyncTime}));
-    btn.textContent = '☁️ 同步中'; btn.classList.add('active');
-    showToast('☁️ 云端同步已启用');
-    syncToCloud();
-    syncFromCloud().then(changed => { if (changed) { renderPage(currentPage); showToast('已从云端同步'); } });
-  }
+// ========= 暗黑模式 =========
+function toggleDark(){
+  document.documentElement.classList.toggle("dark");
 }
 
-async function manualSync() {
-  if (!syncEnabled) return;
-  showToast('☁️ 正在同步...');
-  const changed = await syncFromCloud();
-  if (changed) { renderPage(currentPage); showToast('已从云端同步'); }
-  else { await syncToCloud(); showToast('已同步到云端'); }
+// ========= 每日计划 =========
+function addPlan(){
+  const val = document.getElementById("input-plan").value.trim();
+  if(!val)return;
+  data.plan.push({ id:Date.now(), text:val, done:false });
+  document.getElementById("input-plan").value="";
+  saveData();renderAll();
+}
+function delPlan(id){
+  data.plan = data.plan.filter(item=>item.id!==id);
+  saveData();renderAll();
+}
+function togglePlan(id){
+  const item = data.plan.find(x=>x.id===id);
+  if(item){ item.done=!item.done; saveData(); }
+  renderAll();
 }
 
-// ==================== THEME ====================
-function toggleTheme() {
-  document.body.classList.toggle('dark');
-  db.settings.theme = document.body.classList.contains('dark') ? 'dark' : 'light';
-  document.getElementById('theme-btn').textContent = db.settings.theme === 'dark' ? '☀️' : '🌙';
-  saveDB();
+// ========= 咖啡灵感 =========
+function addInspire(){
+  const val = document.getElementById("input-inspire").value.trim();
+  if(!val)return;
+  data.inspire.push({ id:Date.now(), text:val });
+  document.getElementById("input-inspire").value="";
+  saveData();renderAll();
+}
+function delInspire(id){
+  data.inspire = data.inspire.filter(item=>item.id!==id);
+  saveData();renderAll();
 }
 
-// ==================== NAVIGATION ====================
-function buildNav() {
-  const sidebarNav = document.getElementById('sidebar-nav');
-  sidebarNav.innerHTML = NAV_ITEMS.map(item =>
-    `<a href="#" class="nav-item${currentPage===item.page?' active':''}" data-page="${item.page}">
-      <span class="nav-icon">${item.icon}</span> ${item.label}
-    </a>`
-  ).join('');
-
-  const bottomTabs = document.getElementById('bottom-tabs');
-  bottomTabs.innerHTML = TAB_ITEMS.map((item, i) => {
-    if (i === 2) {
-      return `<div class="tab-btn-center"><button class="tab-btn-fab" onclick="handleFab()">+</button></div>`;
-    }
-    return `<button class="tab-btn${currentPage===item.page?' active':''}" onclick="navigate('${item.page}')">
-      <span class="tab-icon">${item.icon}</span> ${item.label}
-    </button>`;
-  }).join('');
+// ========= 爆款咖啡 =========
+function addHot(){
+  const val = document.getElementById("input-hot").value.trim();
+  if(!val)return;
+  data.hot.push({ id:Date.now(), text:val });
+  document.getElementById("input-hot").value="";
+  saveData();renderAll();
+}
+function delHot(id){
+  data.hot = data.hot.filter(item=>item.id!==id);
+  saveData();renderAll();
 }
 
-function navigate(page) {
-  currentPage = page;
-  currentFilter = '';
-  buildNav();
-  renderPage(page);
-  toggleSidebar(false);
+// ========= 备忘录 =========
+function saveNote(){
+  data.note = document.getElementById("text-note").value;
+  saveData();
+  alert("备忘录已保存");
 }
 
-function renderPage(page) {
-  const main = document.getElementById('main-content');
-  switch(page) {
-    case 'dashboard': main.innerHTML = renderDashboard(); break;
-    case 'recipes': main.innerHTML = renderRecipes(); break;
-    case 'tasting': main.innerHTML = renderTasting(); break;
-    case 'ingredients': main.innerHTML = renderIngredients(); break;
-    case 'tools': main.innerHTML = renderTools(); break;
-    case 'community': main.innerHTML = renderCommunity(); break;
-  }
-  main.scrollTop = 0;
-}
-
-// ==================== DASHBOARD ====================
-function renderDashboard() {
-  const totalRecipes = db.recipes.length;
-  const totalTastings = db.tasting_logs.length;
-  const totalIngredients = db.ingredients.length;
-  const totalPhotos = db.photos.length;
-
-  let html = `
-    <div class="hero-card">
-      <h2>🧪 欢迎回来，00</h2>
-      <p>${fmtDate(Date.now())} · 咖啡饮品研发工作台</p>
-    </div>
-
-    <div class="stats-row">
-      <div class="stat-chip"><div class="stat-chip-num">${totalRecipes}</div><div class="stat-chip-label">配方</div></div>
-      <div class="stat-chip"><div class="stat-chip-num">${totalTastings}</div><div class="stat-chip-label">打卡</div></div>
-      <div class="stat-chip"><div class="stat-chip-num">${totalIngredients}</div><div class="stat-chip-label">原料</div></div>
-      <div class="stat-chip"><div class="stat-chip-num">${totalPhotos}</div><div class="stat-chip-label">照片</div></div>
-    </div>
-
-    <div class="quick-actions">
-      <div class="quick-action" onclick="navigate('recipes');handleFab()"><span class="qa-icon">📝</span><span class="qa-text">新建配方</span></div>
-      <div class="quick-action" onclick="navigate('tasting');handleFab()"><span class="qa-icon">☕</span><span class="qa-text">品鉴打卡</span></div>
-      <div class="quick-action" onclick="navigate('ingredients');handleFab()"><span class="qa-icon">📦</span><span class="qa-text">添加原料</span></div>
-      <div class="quick-action" onclick="navigate('tools')"><span class="qa-icon">🔧</span><span class="qa-text">成本计算</span></div>
-    </div>
-  `;
-
-  // Recent recipes
-  const recentRecipes = [...db.recipes].sort((a,b) => b.createdAt - a.createdAt).slice(0, 3);
-  if (recentRecipes.length > 0) {
-    html += `<div class="section-title"><span>🧪</span> 最近配方</div>`;
-    recentRecipes.forEach(r => html += renderRecipeCard(r));
-  }
-
-  // Recent tastings
-  const recentTastings = [...db.tasting_logs].sort((a,b) => b.createdAt - a.createdAt).slice(0, 2);
-  if (recentTastings.length > 0) {
-    html += `<div class="section-title"><span>☕</span> 最近打卡</div>`;
-    recentTastings.forEach(t => html += renderTastingCard(t));
-  }
-
-  // Recent notes
-  const recentNotes = [...db.notes].sort((a,b) => b.createdAt - a.createdAt).slice(0, 2);
-  if (recentNotes.length > 0) {
-    html += `<div class="section-title"><span>🔬</span> 最近笔记</div>`;
-    recentNotes.forEach(n => html += renderNoteCard(n));
-  }
-
-  return html;
-}
-
-// ==================== RECIPES MODULE ====================
-function renderRecipeCard(r) {
-  const cat = RECIPE_CATEGORIES.find(c => c.key === r.category) || { name: '未分类' };
-  const seasonLabel = r.season ? ` · ${r.season}` : '';
-  return `
-    <div class="recipe-card" onclick="viewRecipe('${r.id}')">
-      ${r.photo ? `<img class="recipe-card-img" src="${r.photo}" alt="${r.name}">` : ''}
-      <div class="recipe-card-body">
-        <div class="recipe-card-header">
-          <div class="recipe-card-title">${r.name}${seasonLabel}</div>
-          ${r.rating ? `<div class="recipe-card-rating">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>` : ''}
-        </div>
-        <div class="recipe-card-meta">
-          <span class="recipe-card-tag tag-coffee">${cat.icon} ${cat.name}</span>
-          ${r.price ? `<span style="font-size:12px;color:var(--accent);">¥${r.price}</span>` : ''}
-          ${r.cost ? `<span style="font-size:12px;color:var(--text-light);">成本¥${r.cost.toFixed(1)}</span>` : ''}
-          <span class="recipe-card-date">${fmtDate(r.createdAt)}</span>
-          ${r.versions && r.versions.length > 1 ? `<span class="badge badge-success">v${r.versions.length}</span>` : ''}
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-function renderRecipes() {
-  let html = `<h1 class="page-title">🧪 配方研发</h1><p class="page-subtitle">创作 · 迭代 · 优化</p>`;
-
-  html += `<div class="filter-bar">`;
-  html += `<button class="filter-chip ${currentFilter===''?'active':''}" onclick="setRecipeFilter('')">全部</button>`;
-  RECIPE_CATEGORIES.forEach(c => {
-    html += `<button class="filter-chip ${currentFilter===c.key?'active':''}" onclick="setRecipeFilter('${c.key}')">${c.icon} ${c.name}</button>`;
-  });
-  html += `<button class="filter-chip ${currentFilter==='abandoned'?'active':''}" onclick="setRecipeFilter('abandoned')">🗑️ 废弃</button>`;
-  html += `</div>`;
-
-  // Libraries tabs
-  html += `<div class="version-tabs">`;
-  ['all','dev','commercial','seasonal','abandoned'].forEach(lib => {
-    const labels = { all:'全部', dev:'研发库', commercial:'商用库', seasonal:'季节限定', abandoned:'废弃配方' };
-    html += `<button class="version-tab ${currentFilter===lib||(currentFilter===''&&lib==='all')?'active':''}" onclick="setRecipeFilter('${lib==='all'?'':lib}')">${labels[lib]}</button>`;
-  });
-  html += `</div>`;
-
-  const filtered = currentFilter
-    ? db.recipes.filter(r => r.category === currentFilter || r.library === currentFilter)
-    : db.recipes;
-
-  if (filtered.length === 0) {
-    html += `<div class="empty-state"><div class="empty-state-icon">📝</div><div class="empty-state-text">还没有配方</div><div class="empty-state-hint">点击 + 创建你的第一个配方</div></div>`;
-    return html;
-  }
-
-  [...filtered].sort((a,b) => b.createdAt - a.createdAt).forEach(r => html += renderRecipeCard(r));
-  return html;
-}
-
-function setRecipeFilter(f) { currentFilter = f; renderPage('recipes'); }
-
-// Recipe Form
-function showRecipeForm(id) {
-  const r = id ? db.recipes.find(x => x.id === id) : {};
-  currentRating = r.rating || 0;
-  currentPhotoData = r.photo || '';
-  const versions = r.versions || [];
-  const activeVer = r.activeVersion || (versions.length > 0 ? versions.length - 1 : 0);
-  const verData = versions[activeVer] || {};
-  const ingredients = verData.ingredients || r.ingredients || [];
-
-  let ingHtml = ingredients.map((ing, i) => `
-    <div class="ingredient-row" style="display:flex;gap:8px;margin-bottom:8px;align-items:center;">
-      <input type="text" class="ing-name" value="${ing.name||''}" placeholder="材料" style="flex:2;">
-      <input type="text" class="ing-amount" value="${ing.amount||''}" placeholder="用量" style="flex:1;">
-      <select class="ing-unit" style="width:60px;font-size:13px;padding:8px;">
-        <option value="g" ${ing.unit==='g'?'selected':''}>g</option>
-        <option value="ml" ${ing.unit==='ml'?'selected':''}>ml</option>
-        <option value="个" ${ing.unit==='个'?'selected':''}>个</option>
-        <option value="勺" ${ing.unit==='勺'?'selected':''}>勺</option>
-      </select>
-      <button class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">✕</button>
-    </div>
-  `).join('');
-
-  // Flavor scores
-  let flavorHtml = FLAVOR_DIMENSIONS.map((dim, i) => `
-    <div class="form-group" style="margin-bottom:8px;">
-      <label style="display:flex;justify-content:space-between;">${dim} <span id="flavor-val-${i}" style="color:var(--accent);">${(r.flavorScores||{})[dim]||5}/10</span></label>
-      <input type="range" min="0" max="10" value="${(r.flavorScores||{})[dim]||5}" class="flavor-slider" data-dim="${dim}" oninput="updateFlavorVal(${i}, this.value)" style="width:100%;">
-    </div>
-  `).join('');
-
-  // Allergens
-  let allergenHtml = ALLERGEN_LIST.map(a => `
-    <label style="display:inline-flex;align-items:center;gap:4px;margin:4px 8px 4px 0;font-size:13px;">
-      <input type="checkbox" class="allergen-check" value="${a}" ${(r.allergens||[]).includes(a)?'checked':''}> ${a}
-    </label>
-  `).join('');
-
-  showModal(id ? '编辑配方' : '新建配方', `
-    <div class="form-group"><label>饮品名称 *</label><input type="text" id="r-name" value="${r.name||''}" placeholder="如：桂花冷萃拿铁"></div>
-    <div class="form-row">
-      <div class="form-group"><label>品类</label><select id="r-category">${RECIPE_CATEGORIES.map(c => `<option value="${c.key}" ${r.category===c.key?'selected':''}>${c.icon} ${c.name}</option>`).join('')}</select></div>
-      <div class="form-group"><label>季节标签</label><select id="r-season"><option value="">不限</option>${['春季🌸','夏季☀️','秋季🍂','冬季❄️'].map(s => `<option value="${s}" ${r.season===s?'selected':''}>${s}</option>`).join('')}</select></div>
-    </div>
-    <div class="form-row">
-      <div class="form-group"><label>建议售价 ¥</label><input type="number" id="r-price" value="${r.price||''}" placeholder="28" step="0.1"></div>
-      <div class="form-group"><label>配方库</label><select id="r-library"><option value="dev" ${r.library==='dev'?'selected':''}>研发库</option><option value="commercial" ${r.library==='commercial'?'selected':''}>商用配方库</option><option value="seasonal" ${r.library==='seasonal'?'selected':''}>季节限定库</option><option value="abandoned" ${r.library==='abandoned'?'selected':''}>废弃配方库</option></select></div>
-    </div>
-    <div class="form-group"><label>成品照片</label>
-      <div class="image-upload-area" onclick="document.getElementById('r-photo-input').click()">
-        <p style="font-size:14px;color:var(--text-light);">📷 点击选择照片</p>
-        <input type="file" id="r-photo-input" accept="image/*" style="display:none" onchange="previewRecipePhoto(this)">
-        <img id="r-photo-preview" class="image-preview" style="display:${currentPhotoData?'block':'none'};" src="${currentPhotoData}">
-      </div>
-    </div>
-    <div class="section-title">📋 原材料配比</div>
-    <div id="ingredient-list">${ingHtml}</div>
-    <button class="btn btn-sm btn-secondary" onclick="addIngredientRow()" style="margin-top:8px;">+ 添加材料</button>
-
-    <div class="section-title">📝 制作流程</div>
-    <div class="form-group"><textarea id="r-steps" placeholder="1. ...&#10;2. ...&#10;3. ...">${r.steps||''}</textarea></div>
-
-    <div class="section-title">🎯 风味测评</div>
-    ${flavorHtml}
-
-    <div class="section-title">⚠️ 风险备注</div>
-    <div class="form-group"><textarea id="r-risks" placeholder="久置变化、分层风险、外卖适配性、过敏原提醒...">${r.risks||''}</textarea></div>
-    <div class="form-group"><label>过敏原标记</label><div>${allergenHtml}</div></div>
-
-    <div class="section-title">💡 研发笔记</div>
-    <div class="form-group"><textarea id="r-notes" placeholder="记录你的经验、改进方向...">${r.notes||''}</textarea></div>
-
-    <div class="form-group"><label>评分</label><div class="rating-input" id="rating-input">${[1,2,3,4,5].map(i => `<span class="rating-star ${i<=currentRating?'active':''}" data-val="${i}" onclick="setRating(${i})">★</span>`).join('')}</div></div>
-  `, [
-    {text: '取消', class:'btn-secondary', action:'closeModal()'},
-    {text: '保存', class:'btn-primary', action:`saveRecipe('${id||''}')`}
-  ]);
-}
-
-function updateFlavorVal(i, v) { document.getElementById(`flavor-val-${i}`).textContent = `${v}/10`; }
-
-function setRating(val) { currentRating = val; document.querySelectorAll('.rating-star').forEach(s => s.classList.toggle('active', parseInt(s.dataset.val) <= val)); }
-
-function previewRecipePhoto(input) {
-  const file = input.files[0]; if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const img = new Image();
-    img.onload = function() {
-      const canvas = document.createElement('canvas');
-      const maxW = 800; let w = img.width, h = img.height;
-      if (w > maxW) { h = h * maxW / w; w = maxW; }
-      canvas.width = w; canvas.height = h;
-      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-      currentPhotoData = canvas.toDataURL('image/jpeg', 0.8);
-      const preview = document.getElementById('r-photo-preview');
-      preview.src = currentPhotoData; preview.style.display = 'block';
-    };
-    img.src = e.target.result;
-  };
-  reader.readAsDataURL(file);
-}
-
-function addIngredientRow() {
-  const list = document.getElementById('ingredient-list');
-  const div = document.createElement('div');
-  div.className = 'ingredient-row';
-  div.style.cssText = 'display:flex;gap:8px;margin-bottom:8px;align-items:center;';
-  div.innerHTML = `<input type="text" class="ing-name" placeholder="材料" style="flex:2;"><input type="text" class="ing-amount" placeholder="用量" style="flex:1;"><select class="ing-unit" style="width:60px;font-size:13px;padding:8px;"><option value="g">g</option><option value="ml">ml</option><option value="个">个</option><option value="勺">勺</option></select><button class="btn btn-sm btn-danger" onclick="this.parentElement.remove()">✕</button>`;
-  list.appendChild(div);
-}
-
-function saveRecipe(id) {
-  const name = document.getElementById('r-name').value.trim();
-  if (!name) { showToast('请输入名称'); return; }
-
-  const ingredients = [];
-  document.querySelectorAll('.ingredient-row').forEach(row => {
-    const n = row.querySelector('.ing-name')?.value?.trim();
-    const a = row.querySelector('.ing-amount')?.value?.trim();
-    const u = row.querySelector('.ing-unit')?.value;
-    if (n) ingredients.push({name:n, amount:a, unit:u});
-  });
-
-  const flavorScores = {};
-  document.querySelectorAll('.flavor-slider').forEach(s => { flavorScores[s.dataset.dim] = parseInt(s.value); });
-
-  const allergens = [];
-  document.querySelectorAll('.allergen-check:checked').forEach(c => allergens.push(c.value));
-
-  const cost = calcCost(ingredients);
-  const versionData = { ingredients, steps: document.getElementById('r-steps').value.trim(), createdAt: Date.now() };
-
-  const data = {
-    name, category: document.getElementById('r-category').value,
-    season: document.getElementById('r-season').value,
-    price: parseFloat(document.getElementById('r-price').value) || 0,
-    library: document.getElementById('r-library').value,
-    photo: currentPhotoData, ingredients,
-    steps: document.getElementById('r-steps').value.trim(),
-    risks: document.getElementById('r-risks').value.trim(),
-    notes: document.getElementById('r-notes').value.trim(),
-    rating: currentRating, flavorScores, allergens, cost,
-  };
-
-  if (id) {
-    const idx = db.recipes.findIndex(x => x.id === id);
-    if (idx >= 0) {
-      const existing = db.recipes[idx];
-      if (!existing.versions) existing.versions = [];
-      existing.versions.push(versionData);
-      data.versions = existing.versions;
-      data.activeVersion = existing.versions.length - 1;
-      db.recipes[idx] = {...existing, ...data};
-    }
-  } else {
-    data.id = genId(); data.createdAt = Date.now();
-    data.versions = [versionData]; data.activeVersion = 0;
-    db.recipes.push(data);
-  }
-
-  currentRating = 0; currentPhotoData = '';
-  saveDB(); closeModal(); renderPage(currentPage);
-  showToast(id ? '配方已更新（新版本已保存）' : '配方已创建');
-}
-
-function calcCost(ingredients) {
-  return ingredients.reduce((sum, ing) => {
-    const matched = db.ingredients.find(i => i.name === ing.name);
-    if (matched && matched.price && matched.unit) {
-      const amt = parseFloat(ing.amount) || 0;
-      const unitPrice = matched.price / (matched.spec || 1);
-      if (ing.unit === matched.unit) return sum + amt * unitPrice;
-      if ((ing.unit === 'ml' || ing.unit === 'g') && (matched.unit === 'ml' || matched.unit === 'g')) return sum + amt * unitPrice;
-    }
-    return sum;
-  }, 0);
-}
-
-function viewRecipe(id) {
-  const r = db.recipes.find(x => x.id === id); if (!r) return;
-  const cat = RECIPE_CATEGORIES.find(c => c.key === r.category) || { name: '未分类' };
-  const grossMargin = r.price > 0 && r.cost > 0 ? ((r.price - r.cost) / r.price * 100).toFixed(0) : 0;
-
-  let ingHtml = (r.ingredients||[]).map(ing => `<div class="ingredient-line"><span>${ing.name}</span><span><strong>${ing.amount}${ing.unit||''}</strong></span></div>`).join('');
-
-  // Cost breakdown
-  let costHtml = '';
-  if (r.cost > 0) {
-    costHtml = `<div class="recipe-ingredients"><h4>💰 成本分析</h4>
-      <table class="cost-table"><tr><th>项目</th><th>金额</th></tr>
-      <tr><td>单杯物料成本</td><td>¥${r.cost.toFixed(2)}</td></tr>
-      <tr><td>建议售价</td><td>¥${r.price.toFixed(1)}</td></tr>
-      <tr class="total-row"><td>毛利率</td><td>${grossMargin}%</td></tr>
-      </table></div>`;
-  }
-
-  // Flavor radar
-  let radarHtml = '';
-  if (r.flavorScores && Object.keys(r.flavorScores).length > 0) {
-    radarHtml = `<div class="radar-container"><canvas id="flavor-radar" width="280" height="280"></canvas></div>`;
-    setTimeout(() => drawRadar('flavor-radar', r.flavorScores), 100);
-  }
-
-  // Allergen warning
-  let allergenHtml = '';
-  if (r.allergens && r.allergens.length > 0) {
-    allergenHtml = `<div style="margin:12px 0;">${r.allergens.map(a => `<span class="badge badge-danger">⚠ ${a}</span>`).join(' ')}</div>`;
-  }
-
-  // Version tabs
-  let versionHtml = '';
-  if (r.versions && r.versions.length > 1) {
-    versionHtml = `<div class="section-title">📜 版本历史 (${r.versions.length})</div><div class="version-tabs">`;
-    r.versions.forEach((v, i) => {
-      versionHtml += `<span class="version-tab ${i===r.activeVersion?'active':''}" onclick="switchVersion('${r.id}',${i})">v${i+1}</span>`;
-    });
-    versionHtml += `</div>`;
-  }
-
-  // Batch calculator
-  const batchHtml = `
-    <div class="recipe-ingredients" style="margin-top:16px;"><h4>📊 批量换算</h4>
-      <div class="form-inline" style="margin-bottom:8px;">
-        <span style="font-size:13px;">杯数:</span>
-        <input type="number" id="batch-cups" value="10" min="1" style="width:80px;" onchange="updateBatch()">
-        <button class="btn btn-sm btn-primary" onclick="updateBatch()">计算</button>
-      </div>
-      <div id="batch-result" style="font-size:13px;"></div>
-    </div>
-  `;
-
-  // Tasting logs for this recipe
-  const relatedLogs = db.tasting_logs.filter(t => t.recipeId === id);
-  let tastingSection = '';
-  if (relatedLogs.length > 0) {
-    tastingSection = `<div class="section-title">☕ 打卡记录 (${relatedLogs.length})</div>`;
-    relatedLogs.slice(0, 3).forEach(t => tastingSection += renderTastingCard(t));
-    if (relatedLogs.length > 3) tastingSection += `<p style="text-align:center;color:var(--text-light);font-size:13px;">还有 ${relatedLogs.length-3} 条记录...</p>`;
-  }
-
-  showModal(r.name, `
-    ${r.photo ? `<img class="recipe-detail-img" src="${r.photo}" alt="${r.name}">` : ''}
-    <div class="recipe-detail-meta">
-      <span class="recipe-card-tag tag-coffee">${cat.icon} ${cat.name}</span>
-      ${r.season ? `<span class="recipe-card-tag tag-season">${r.season}</span>` : ''}
-      ${r.rating ? `<span style="color:#d4a040;">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span>` : ''}
-      <span style="font-size:12px;color:var(--text-light);">${fmtDate(r.createdAt)}</span>
-    </div>
-    ${allergenHtml}
-    ${ingredients.length > 0 ? `<div class="recipe-ingredients"><h4>📋 原材料</h4>${ingHtml}</div>` : ''}
-    ${r.steps ? `<div style="margin-bottom:16px;"><h4 style="font-size:14px;font-weight:700;margin-bottom:8px;color:var(--accent);">👨‍🍳 制作步骤</h4><div class="recipe-steps">${r.steps}</div></div>` : ''}
-    ${costHtml}
-    ${radarHtml}
-    ${versionHtml}
-    ${r.risks ? `<div style="margin-bottom:12px;"><h4 style="font-size:14px;font-weight:700;margin-bottom:6px;color:var(--warning);">⚠️ 风险备注</h4><div style="font-size:14px;line-height:1.6;white-space:pre-wrap;background:#faf5eb;padding:12px;border-radius:8px;">${r.risks}</div></div>` : ''}
-    ${r.notes ? `<div><h4 style="font-size:14px;font-weight:700;margin-bottom:6px;color:var(--accent);">💡 研发笔记</h4><div style="font-size:14px;line-height:1.6;white-space:pre-wrap;">${r.notes}</div></div>` : ''}
-    ${batchHtml}
-    ${tastingSection}
-  `, [
-    {text: '删除', class:'btn-danger', action:`deleteRecipe('${r.id}')`},
-    {text: '导出SOP', class:'btn-secondary', action:`exportSOP('${r.id}')`},
-    {text: '编辑', class:'btn-primary', action:`closeModal();editRecipe('${r.id}')`}
-  ]);
-}
-
-function switchVersion(recipeId, verIdx) {
-  const r = db.recipes.find(x => x.id === recipeId); if (!r || !r.versions) return;
-  r.activeVersion = verIdx;
-  const ver = r.versions[verIdx];
-  r.ingredients = ver.ingredients;
-  r.steps = ver.steps;
-  saveDB();
-  closeModal();
-  setTimeout(() => viewRecipe(recipeId), 200);
-}
-
-function updateBatch() {
-  const cups = parseInt(document.getElementById('batch-cups')?.value) || 10;
-  const r = currentViewRecipe;
-  if (!r) return;
-  let html = '';
-  (r.ingredients||[]).forEach(ing => {
-    const amt = parseFloat(ing.amount) || 0;
-    html += `<div class="ingredient-line"><span>${ing.name}</span><span><strong>${(amt*cups).toFixed(1)}${ing.unit||''}</strong></span></div>`;
-  });
-  if (r.cost > 0) html += `<div class="ingredient-line" style="margin-top:8px;"><span>总成本</span><span><strong>¥${(r.cost*cups).toFixed(1)}</strong></span></div>`;
-  const el = document.getElementById('batch-result'); if (el) el.innerHTML = html;
-}
-let currentViewRecipe = null;
-const origViewRecipe = viewRecipe;
-viewRecipe = function(id) { currentViewRecipe = db.recipes.find(x=>x.id===id); origViewRecipe(id); };
-
-function exportSOP(id) {
-  const r = db.recipes.find(x => x.id === id); if (!r) return;
-  let text = `【00的实验室】SOP标准作业程序\n`;
-  text += `================================\n`;
-  text += `饮品名称: ${r.name}\n`;
-  text += `品类: ${(RECIPE_CATEGORIES.find(c=>c.key===r.category)||{}).name||'未分类'}\n`;
-  text += `版本: v${(r.activeVersion||0)+1} | 日期: ${fmtDate(Date.now())}\n`;
-  text += `--------------------------------\n`;
-  text += `原材料配比:\n`;
-  (r.ingredients||[]).forEach(ing => text += `  - ${ing.name}: ${ing.amount}${ing.unit||''}\n`);
-  text += `--------------------------------\n`;
-  text += `制作流程:\n${r.steps||'无'}\n`;
-  text += `--------------------------------\n`;
-  text += `风险备注:\n${r.risks||'无'}\n`;
-  text += `================================\n`;
-  text += `生成自: 00的实验室 App\n`;
-
-  const blob = new Blob([text], {type:'text/plain;charset=utf-8'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = `SOP_${r.name}_${fmtDate(Date.now())}.txt`;
-  a.click(); URL.revokeObjectURL(url);
-  showToast('SOP 已导出');
-}
-
-function editRecipe(id) { currentRating = db.recipes.find(x=>x.id===id)?.rating||0; showRecipeForm(id); }
-function deleteRecipe(id) { if (!confirm('确定删除？')) return; db.recipes = db.recipes.filter(x => x.id !== id); saveDB(); closeModal(); renderPage(currentPage); showToast('已删除'); }
-
-// Radar Chart
-function drawRadar(canvasId, scores) {
-  const canvas = document.getElementById(canvasId); if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  const dims = FLAVOR_DIMENSIONS;
-  const n = dims.length;
-  const cx = canvas.width/2, cy = canvas.height/2, r = 110;
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-  // Grid
-  for (let level = 2; level <= 10; level += 2) {
-    ctx.beginPath();
-    for (let i = 0; i < n; i++) {
-      const angle = (Math.PI * 2 / n) * i - Math.PI/2;
-      const x = cx + r * level/10 * Math.cos(angle);
-      const y = cy + r * level/10 * Math.sin(angle);
-      i === 0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
-    }
-    ctx.closePath();
-    ctx.strokeStyle = '#e0dcd5'; ctx.lineWidth = 1; ctx.stroke();
-  }
-
-  // Data
-  ctx.beginPath();
-  for (let i = 0; i < n; i++) {
-    const val = (scores[dims[i]] || 5) / 10;
-    const angle = (Math.PI * 2 / n) * i - Math.PI/2;
-    const x = cx + r * val * Math.cos(angle);
-    const y = cy + r * val * Math.sin(angle);
-    i === 0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
-  }
-  ctx.closePath();
-  ctx.fillStyle = 'rgba(139,111,71,0.2)'; ctx.fill();
-  ctx.strokeStyle = '#8B6F47'; ctx.lineWidth = 2; ctx.stroke();
-
-  // Dots
-  for (let i = 0; i < n; i++) {
-    const val = (scores[dims[i]] || 5) / 10;
-    const angle = (Math.PI * 2 / n) * i - Math.PI/2;
-    const x = cx + r * val * Math.cos(angle);
-    const y = cy + r * val * Math.sin(angle);
-    ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI*2);
-    ctx.fillStyle = '#8B6F47'; ctx.fill();
-  }
-
-  // Labels
-  ctx.fillStyle = '#6b6b6b'; ctx.font = '12px -apple-system, sans-serif'; ctx.textAlign = 'center';
-  for (let i = 0; i < n; i++) {
-    const angle = (Math.PI * 2 / n) * i - Math.PI/2;
-    const x = cx + (r+20) * Math.cos(angle);
-    const y = cy + (r+20) * Math.sin(angle) + 4;
-    ctx.fillText(dims[i], x, y);
-  }
-}
-
-// ==================== TASTING MODULE ====================
-function renderTastingCard(t) {
-  const recipe = t.recipeId ? db.recipes.find(r => r.id === t.recipeId) : null;
-  return `
-    <div class="card" onclick="viewTasting('${t.id}')" style="cursor:pointer;">
-      <div style="display:flex;gap:12px;">
-        ${t.photo ? `<img src="${t.photo}" style="width:60px;height:60px;border-radius:10px;object-fit:cover;flex-shrink:0;">` : `<div style="width:60px;height:60px;border-radius:10px;background:var(--accent-bg);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;">☕</div>`}
-        <div style="flex:1;min-width:0;">
-          <div style="display:flex;justify-content:space-between;align-items:flex-start;">
-            <div>
-              <div style="font-weight:700;font-size:15px;">${t.drinkName||'未命名饮品'}</div>
-              ${t.shopName ? `<div style="font-size:12px;color:var(--text-light);">📍 ${t.shopName}</div>` : ''}
-              ${recipe ? `<div style="font-size:12px;color:var(--accent);">🔗 ${recipe.name}</div>` : ''}
-            </div>
-            <div style="color:#d4a040;font-size:13px;flex-shrink:0;">${t.rating ? '★'.repeat(t.rating)+'☆'.repeat(5-t.rating) : ''}</div>
-          </div>
-          <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;">
-            ${t.tags ? t.tags.map(tag => `<span class="tag" style="background:var(--accent-bg);color:var(--accent);">${tag}</span>`).join('') : ''}
-            <span style="font-size:11px;color:var(--text-muted);">${fmtDate(t.createdAt)}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-function renderTasting() {
-  let html = `<h1 class="page-title">☕ 品鉴打卡</h1><p class="page-subtitle">记录每一杯 · 收集每一枚印章</p>`;
-
-  // Monthly stats
-  const now = new Date();
-  const thisMonth = db.tasting_logs.filter(t => {
-    const d = new Date(t.createdAt);
-    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-  });
-  const thisMonthShops = new Set(thisMonth.map(t => t.shopName).filter(Boolean)).size;
-  const freqMap = {};
-  thisMonth.forEach(t => { const n = t.drinkName; freqMap[n] = (freqMap[n]||0)+1; });
-  let monthlyFav = '';
-  let maxFreq = 0;
-  Object.entries(freqMap).forEach(([k,v]) => { if (v > maxFreq) { maxFreq = v; monthlyFav = k; } });
-
-  html += `<div class="card" style="margin-bottom:16px;">
-    <div style="display:flex;gap:16px;flex-wrap:wrap;">
-      <div style="text-align:center;"><div style="font-size:28px;font-weight:800;color:var(--accent);">${thisMonth.length}</div><div style="font-size:11px;color:var(--text-light);">本月杯数</div></div>
-      <div style="text-align:center;"><div style="font-size:28px;font-weight:800;color:var(--accent);">${thisMonthShops}</div><div style="font-size:11px;color:var(--text-light);">打卡门店</div></div>
-      ${monthlyFav ? `<div style="text-align:center;"><div style="font-size:14px;font-weight:700;color:var(--accent);margin-top:4px;">🏆 ${monthlyFav}</div><div style="font-size:11px;color:var(--text-light);">本月最爱</div></div>` : ''}
-    </div>
-  </div>`;
-
-  // View toggle
-  html += `<div class="filter-bar">
-    <button class="filter-chip ${currentFilter==='calendar'||currentFilter===''?'active':''}" onclick="setTastingView('calendar')">📅 月历</button>
-    <button class="filter-chip ${currentFilter==='list'?'active':''}" onclick="setTastingView('list')">📋 列表</button>
-    <button class="filter-chip ${currentFilter==='collection'?'active':''}" onclick="setTastingView('collection')">🎖️ 图鉴</button>
-    <button class="filter-chip ${currentFilter==='achievements'?'active':''}" onclick="setTastingView('achievements')">🏆 成就</button>
-    <button class="filter-chip ${currentFilter==='report'?'active':''}" onclick="setTastingView('report')">📊 报表</button>
-  </div>`;
-
-  if (!currentFilter || currentFilter === 'calendar') {
-    html += renderCalendar();
-  } else if (currentFilter === 'list') {
-    html += renderTastingList();
-  } else if (currentFilter === 'collection') {
-    html += renderCollection();
-  } else if (currentFilter === 'achievements') {
-    html += renderAchievements();
-  } else if (currentFilter === 'report') {
-    html += renderTastingReport();
-  }
-
-  return html;
-}
-
-function setTastingView(v) { currentFilter = v; renderPage('tasting'); }
-
-function renderCalendar() {
-  const now = new Date();
-  if (!calendarYear) { calendarYear = now.getFullYear(); calendarMonth = now.getMonth(); }
-
-  const firstDay = new Date(calendarYear, calendarMonth, 1).getDay();
-  const daysInMonth = new Date(calendarYear, calendarMonth+1, 0).getDate();
-  const today = new Date();
-
-  let html = `<div class="calendar">
-    <div class="calendar-header">
-      <span class="calendar-title">${fmtMonth(calendarYear, calendarMonth)}</span>
-      <div class="calendar-nav">
-        <button onclick="changeMonth(-1)">◀</button>
-        <button onclick="calendarYear=${today.getFullYear()};calendarMonth=${today.getMonth()};renderPage('tasting')">●</button>
-        <button onclick="changeMonth(1)">▶</button>
-      </div>
-    </div>
-    <div class="calendar-weekdays">${['日','一','二','三','四','五','六'].map(d => `<span>${d}</span>`).join('')}</div>
-    <div class="calendar-days">`;
-
-  for (let i = 0; i < firstDay; i++) html += `<div class="calendar-day other-month"></div>`;
-
-  for (let d = 1; d <= daysInMonth; d++) {
-    const dateStr = `${calendarYear}-${String(calendarMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    const hasLog = db.tasting_logs.some(t => fmtDate(t.createdAt) === dateStr);
-    const isToday = calendarYear === today.getFullYear() && calendarMonth === today.getMonth() && d === today.getDate();
-    const dayLogs = db.tasting_logs.filter(t => fmtDate(t.createdAt) === dateStr);
-
-    html += `<div class="calendar-day${isToday?' today':''}${hasLog?' has-log':''}" onclick="viewDayLogs('${dateStr}')">
-      <span>${d}</span>
-      ${hasLog ? `<span class="day-stamp">${dayLogs[0].drinkName ? '☕' : '🍵'}</span>` : ''}
-    </div>`;
-  }
-
-  html += `</div></div>`;
-  return html;
-}
-
-function changeMonth(delta) {
-  calendarMonth += delta;
-  if (calendarMonth < 0) { calendarMonth = 11; calendarYear--; }
-  if (calendarMonth > 11) { calendarMonth = 0; calendarYear++; }
-  renderPage('tasting');
-}
-
-function viewDayLogs(dateStr) {
-  const logs = db.tasting_logs.filter(t => fmtDate(t.createdAt) === dateStr);
-  if (logs.length === 0) return;
-  let html = `<div style="font-size:13px;color:var(--text-light);margin-bottom:12px;">📅 ${dateStr} · ${logs.length} 杯</div>`;
-  logs.forEach(t => html += renderTastingCard(t));
-  showModal(`${dateStr} 品鉴记录`, html, [{text:'关闭', class:'btn-secondary', action:'closeModal()'}]);
-}
-
-function renderTastingList() {
-  const logs = [...db.tasting_logs].sort((a,b) => b.createdAt - a.createdAt);
-  if (logs.length === 0) return `<div class="empty-state"><div class="empty-state-icon">☕</div><div class="empty-state-text">还没有品鉴记录</div><div class="empty-state-hint">点击 + 开始打卡</div></div>`;
-  return logs.map(t => renderTastingCard(t)).join('');
-}
-
-function renderCollection() {
-  // Stamp collection
-  let html = `<div class="section-title">🎖️ 电子印章图鉴</div>`;
-  html += `<div class="collection-grid">`;
-
-  // Recipe stamps
-  db.recipes.forEach(r => {
-    const hasStamp = db.stamps.some(s => s.type === 'recipe' && s.recipeId === r.id);
-    html += `<div class="collection-item${hasStamp?'':' locked'}" onclick="${hasStamp?`viewStamp('recipe','${r.id}')`:''}">
-      <div class="coll-icon">${hasStamp ? '🏅' : '🔒'}</div>
-      <div class="coll-name">${r.name}</div>
+// ========= 渲染全部列表 =========
+function renderAll(){
+  // 计划渲染
+  let htmlPlan = "";
+  data.plan.forEach(item=>{
+    htmlPlan += `
+    <div class="flex items-center justify-between border dark:border-gray-700 rounded-lg px-3 py-2.5">
+      <label class="flex items-center gap-2">
+        <input type="checkbox" ${item.done?"checked":""} onchange="togglePlan(${item.id})">
+        <span class="${item.done?'line-through opacity-60':''}">${item.text}</span>
+      </label>
+      <button onclick="delPlan(${item.id})" class="text-red-400"><i class="fa fa-trash-o"></i></button>
     </div>`;
   });
+  document.getElementById("list-plan").innerHTML = htmlPlan;
 
-  // Shop stamps
-  const shops = [...new Set(db.tasting_logs.map(t => t.shopName).filter(Boolean))];
-  shops.forEach(shop => {
-    const hasStamp = db.stamps.some(s => s.type === 'shop' && s.shopName === shop);
-    html += `<div class="collection-item${hasStamp?'':' locked'}" onclick="${hasStamp?`viewStamp('shop','${encodeURIComponent(shop)}')`:''}">
-      <div class="coll-icon">${hasStamp ? '🏪' : '🔒'}</div>
-      <div class="coll-name">${shop}</div>
+  // 灵感渲染
+  let htmlInspire = "";
+  data.inspire.forEach(item=>{
+    htmlInspire += `
+    <div class="flex items-center justify-between border dark:border-gray-700 rounded-lg px-3 py-2.5">
+      <span>${item.text}</span>
+      <button onclick="delInspire(${item.id})" class="text-red-400"><i class="fa fa-trash-o"></i></button>
     </div>`;
   });
+  document.getElementById("list-inspire").innerHTML = htmlInspire;
 
-  html += `</div>`;
-  return html;
-}
-
-function renderAchievements() {
-  const cupCount = db.tasting_logs.length;
-  const shopCount = new Set(db.tasting_logs.map(t => t.shopName).filter(Boolean)).size;
-  const recipeCount = db.recipes.length;
-  const seasons = new Set(db.tasting_logs.filter(t => t.season).map(t => t.season)).size;
-
-  let html = `<div class="section-title">🏆 成就体系</div>`;
-  ACHIEVEMENTS.forEach(a => {
-    let progress = 0;
-    if (a.id.startsWith('cup_')) progress = Math.min(cupCount / a.target * 100, 100);
-    else if (a.id.startsWith('shop_')) progress = Math.min(shopCount / a.target * 100, 100);
-    else if (a.id.startsWith('recipe_')) progress = Math.min(recipeCount / a.target * 100, 100);
-    else if (a.id === 'season_all') progress = Math.min(seasons / a.target * 100, 100);
-    const unlocked = progress >= 100;
-    html += `<div class="achievement-card${unlocked?' unlocked':' locked'}">
-      <div class="achievement-icon">${a.icon}</div>
-      <div class="achievement-info">
-        <div class="achievement-name">${a.name}${unlocked?' ✅':''}</div>
-        <div class="achievement-desc">${a.desc}</div>
-        <div class="achievement-progress"><div class="achievement-progress-bar" style="width:${progress}%"></div></div>
-      </div>
+  // 爆款咖啡渲染
+  let htmlHot = "";
+  data.hot.forEach(item=>{
+    htmlHot += `
+    <div class="flex items-center justify-between border dark:border-gray-700 rounded-lg px-3 py-2.5">
+      <span>${item.text}</span>
+      <button onclick="delHot(${item.id})" class="text-red-400"><i class="fa fa-trash-o"></i></button>
     </div>`;
   });
-  return html;
+  document.getElementById("list-hot").innerHTML = htmlHot;
+
+  //备忘录填充
+  document.getElementById("text-note").value = data.note;
 }
 
-function renderTastingReport() {
-  const logs = db.tasting_logs;
-  if (logs.length === 0) return `<div class="empty-state"><div class="empty-state-icon">📊</div><div class="empty-state-text">还没有数据</div></div>`;
-
-  // Category distribution
-  const catCount = {};
-  logs.forEach(t => { const cat = t.drinkCategory || '其他'; catCount[cat] = (catCount[cat]||0)+1; });
-
-  // Monthly trend
-  const monthlyTrend = {};
-  logs.forEach(t => {
-    const d = new Date(t.createdAt);
-    const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
-    monthlyTrend[key] = (monthlyTrend[key]||0)+1;
-  });
-
-  // Flavor preference
-  const flavorAvg = {};
-  FLAVOR_DIMENSIONS.forEach(dim => {
-    const scores = logs.filter(t => t.flavorScores && t.flavorScores[dim]).map(t => t.flavorScores[dim]);
-    flavorAvg[dim] = scores.length > 0 ? (scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(1) : '-';
-  });
-
-  let html = `<div class="section-title">📊 个人饮用数据报表</div>`;
-
-  html += `<div class="card"><h4 style="margin-bottom:8px;">品类偏好分布</h4>`;
-  Object.entries(catCount).forEach(([k,v]) => {
-    html += `<div style="margin:4px 0;font-size:14px;"><span>${k}</span> <span style="float:right;color:var(--accent);">${v} 杯</span><div class="achievement-progress" style="margin-top:4px;"><div class="achievement-progress-bar" style="width:${v/logs.length*100}%"></div></div></div>`;
-  });
-  html += `</div>`;
-
-  html += `<div class="card"><h4 style="margin-bottom:8px;">月度饮用趋势</h4>`;
-  Object.entries(monthlyTrend).sort().forEach(([k,v]) => {
-    html += `<div style="margin:4px 0;font-size:14px;">${k}: <strong>${v}</strong> 杯</div>`;
-  });
-  html += `</div>`;
-
-  html += `<div class="card"><h4 style="margin-bottom:8px;">风味偏好分析</h4>`;
-  FLAVOR_DIMENSIONS.forEach(dim => {
-    html += `<div style="margin:4px 0;font-size:14px;display:flex;justify-content:space-between;"><span>${dim}</span><span style="color:var(--accent);">${flavorAvg[dim]}/10</span></div>`;
-  });
-  html += `</div>`;
-
-  html += `<div class="report-chart"><canvas id="report-radar" width="280" height="280"></canvas></div>`;
-  setTimeout(() => {
-    const scores = {};
-    FLAVOR_DIMENSIONS.forEach(dim => { scores[dim] = parseFloat(flavorAvg[dim]) || 5; });
-    drawRadar('report-radar', scores);
-  }, 100);
-
-  return html;
-}
-
-// Tasting Form
-function showTastingForm(id) {
-  const t = id ? db.tasting_logs.find(x => x.id === id) : {};
-  currentRating = t.rating || 0;
-  currentPhotoData = t.photo || '';
-
-  let flavorHtml = FLAVOR_DIMENSIONS.map((dim, i) => `
-    <div class="form-group" style="margin-bottom:8px;">
-      <label style="display:flex;justify-content:space-between;">${dim} <span id="t-flavor-val-${i}" style="color:var(--accent);">${(t.flavorScores||{})[dim]||5}/10</span></label>
-      <input type="range" min="0" max="10" value="${(t.flavorScores||{})[dim]||5}" class="t-flavor-slider" data-dim="${dim}" oninput="document.getElementById('t-flavor-val-${i}').textContent=this.value+'/10'" style="width:100%;">
-    </div>
-  `).join('');
-
-  showModal(id ? '编辑打卡' : '新建品鉴打卡', `
-    <div class="form-group"><label>模式</label>
-      <select id="t-mode" onchange="toggleTastingMode()">
-        <option value="recipe" ${t.recipeId?'selected':''}>🔗 关联配方</option>
-        <option value="external" ${!t.recipeId&&id?'selected':''}>🏪 外部探店</option>
-      </select>
-    </div>
-    <div id="t-recipe-section">
-      <div class="form-group"><label>选择配方</label>
-        <select id="t-recipe">${db.recipes.map(r => `<option value="${r.id}" ${t.recipeId===r.id?'selected':''}>${r.name}</option>`).join('')}</select>
-      </div>
-    </div>
-    <div class="form-group"><label>饮品名称 *</label><input type="text" id="t-name" value="${t.drinkName||''}" placeholder="如：桂花冷萃"></div>
-    <div id="t-external-section" style="display:${!t.recipeId&&id?'block':'none'};">
-      <div class="form-row">
-        <div class="form-group"><label>门店名称</label><input type="text" id="t-shop" value="${t.shopName||''}" placeholder="如：Seesaw Coffee"></div>
-        <div class="form-group"><label>城市</label><input type="text" id="t-city" value="${t.city||''}" placeholder="如：上海"></div>
-      </div>
-    </div>
-    <div class="form-group"><label>饮用日期</label><input type="date" id="t-date" value="${t.createdAt ? fmtDate(t.createdAt) : fmtDate(Date.now())}"></div>
-    <div class="form-group"><label>照片</label>
-      <div class="image-upload-area" onclick="document.getElementById('t-photo-input').click()">
-        <p style="font-size:14px;color:var(--text-light);">📷 点击拍照</p>
-        <input type="file" id="t-photo-input" accept="image/*" style="display:none" onchange="previewTastingPhoto(this)">
-        <img id="t-photo-preview" class="image-preview" style="display:${currentPhotoData?'block':'none'};" src="${currentPhotoData}">
-      </div>
-    </div>
-    <div class="form-group"><label>定制选项</label><input type="text" id="t-custom" value="${t.customOptions||''}" placeholder="如：去冰、半糖、换燕麦奶"></div>
-    <div class="section-title">🎯 风味评分</div>
-    ${flavorHtml}
-    <div class="form-group"><label>评分</label><div class="rating-input" id="t-rating-input">${[1,2,3,4,5].map(i => `<span class="rating-star ${i<=currentRating?'active':''}" data-val="${i}" onclick="setTastingRating(${i})">★</span>`).join('')}</div></div>
-    <div class="form-group"><label>标签（逗号分隔）</label><input type="text" id="t-tags" value="${(t.tags||[]).join(', ')}" placeholder="如：清爽, 果香, 想复刻"></div>
-    <div class="form-group"><label>回购意愿</label><select id="t-rebuy"><option value="">未选择</option><option value="yes" ${t.rebuy==='yes'?'selected':''}>👍 会回购</option><option value="no" ${t.rebuy==='no'?'selected':''}>👎 不会回购</option></select></div>
-    <div class="form-group"><label>个人笔记</label><textarea id="t-notes" placeholder="主观感受、改良想法、踩坑记录...">${t.notes||''}</textarea></div>
-  `, [
-    {text: '取消', class:'btn-secondary', action:'closeModal()'},
-    {text: '保存', class:'btn-primary', action:`saveTasting('${id||''}')`}
-  ]);
-}
-
-function toggleTastingMode() {
-  const mode = document.getElementById('t-mode')?.value;
-  document.getElementById('t-recipe-section').style.display = mode === 'recipe' ? 'block' : 'none';
-  document.getElementById('t-external-section').style.display = mode === 'external' ? 'block' : 'none';
-}
-
-function setTastingRating(val) {
-  currentRating = val;
-  document.querySelectorAll('#t-rating-input .rating-star').forEach(s => s.classList.toggle('active', parseInt(s.dataset.val) <= val));
-}
-
-function previewTastingPhoto(input) {
-  const file = input.files[0]; if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const img = new Image();
-    img.onload = function() {
-      const canvas = document.createElement('canvas');
-      const maxW = 800; let w = img.width, h = img.height;
-      if (w > maxW) { h = h * maxW / w; w = maxW; }
-      canvas.width = w; canvas.height = h;
-      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-      currentPhotoData = canvas.toDataURL('image/jpeg', 0.8);
-      const preview = document.getElementById('t-photo-preview');
-      preview.src = currentPhotoData; preview.style.display = 'block';
-    };
-    img.src = e.target.result;
-  };
-  reader.readAsDataURL(file);
-}
-
-function saveTasting(id) {
-  const drinkName = document.getElementById('t-name').value.trim();
-  if (!drinkName) { showToast('请输入饮品名称'); return; }
-
-  const mode = document.getElementById('t-mode').value;
-  const recipeId = mode === 'recipe' ? document.getElementById('t-recipe').value : null;
-  const recipe = recipeId ? db.recipes.find(r => r.id === recipeId) : null;
-
-  const flavorScores = {};
-  document.querySelectorAll('.t-flavor-slider').forEach(s => { flavorScores[s.dataset.dim] = parseInt(s.value); });
-
-  const tagsStr = document.getElementById('t-tags').value.trim();
-  const tags = tagsStr ? tagsStr.split(/[,，]/).map(t => t.trim()).filter(Boolean) : [];
-
-  const data = {
-    drinkName, recipeId, recipeName: recipe?.name || null,
-    mode, shopName: document.getElementById('t-shop').value.trim(),
-    city: document.getElementById('t-city').value.trim(),
-    drinkDate: document.getElementById('t-date').value,
-    photo: currentPhotoData, customOptions: document.getElementById('t-custom').value.trim(),
-    flavorScores, rating: currentRating, tags,
-    rebuy: document.getElementById('t-rebuy').value,
-    notes: document.getElementById('t-notes').value.trim(),
-  };
-
-  if (id) {
-    const idx = db.tasting_logs.findIndex(x => x.id === id);
-    if (idx >= 0) db.tasting_logs[idx] = {...db.tasting_logs[idx], ...data};
-  } else {
-    data.id = genId(); data.createdAt = Date.now();
-    db.tasting_logs.push(data);
-    // Auto-generate stamp
-    autoStamp(data);
-  }
-
-  currentRating = 0; currentPhotoData = '';
-  saveDB(); closeModal(); renderPage(currentPage);
-  showToast(id ? '已更新' : '打卡成功！印章已生成');
-}
-
-function autoStamp(data) {
-  if (data.recipeId) {
-    if (!db.stamps.some(s => s.type === 'recipe' && s.recipeId === data.recipeId)) {
-      db.stamps.push({ id: genId(), type: 'recipe', recipeId: data.recipeId, recipeName: data.recipeName, createdAt: Date.now() });
-    }
-  }
-  if (data.shopName) {
-    if (!db.stamps.some(s => s.type === 'shop' && s.shopName === data.shopName)) {
-      db.stamps.push({ id: genId(), type: 'shop', shopName: data.shopName, createdAt: Date.now() });
-    }
-  }
-}
-
-function viewTasting(id) {
-  const t = db.tasting_logs.find(x => x.id === id); if (!t) return;
-  const recipe = t.recipeId ? db.recipes.find(r => r.id === t.recipeId) : null;
-
-  let flavorHtml = '';
-  if (t.flavorScores) {
-    flavorHtml = `<div class="radar-container"><canvas id="tasting-radar" width="280" height="280"></canvas></div>`;
-    setTimeout(() => drawRadar('tasting-radar', t.flavorScores), 100);
-  }
-
-  showModal(t.drinkName, `
-    ${t.photo ? `<img class="recipe-detail-img" src="${t.photo}" alt="${t.drinkName}">` : ''}
-    <div class="recipe-detail-meta">
-      ${t.mode === 'external' ? '<span class="recipe-card-tag tag-special">🏪 探店</span>' : '<span class="recipe-card-tag tag-coffee">🧪 自研</span>'}
-      ${t.rating ? `<span style="color:#d4a040;">${'★'.repeat(t.rating)}${'☆'.repeat(5-t.rating)}</span>` : ''}
-      <span style="font-size:12px;color:var(--text-light);">${t.drinkDate || fmtDate(t.createdAt)}</span>
-    </div>
-    ${t.shopName ? `<div style="margin-bottom:8px;">📍 ${t.shopName}${t.city?' · '+t.city:''}</div>` : ''}
-    ${recipe ? `<div style="margin-bottom:8px;"><button class="btn btn-sm btn-outline" onclick="closeModal();viewRecipe('${recipe.id}')">🔗 查看配方: ${recipe.name}</button></div>` : ''}
-    ${t.customOptions ? `<div style="margin-bottom:8px;font-size:14px;">🔧 ${t.customOptions}</div>` : ''}
-    ${flavorHtml}
-    ${t.notes ? `<div style="margin-top:12px;"><h4 style="font-size:14px;font-weight:700;margin-bottom:4px;">💭 笔记</h4><div style="font-size:14px;line-height:1.6;white-space:pre-wrap;">${t.notes}</div></div>` : ''}
-    ${t.tags ? `<div style="margin-top:12px;">${t.tags.map(tag => `<span class="tag" style="background:var(--accent-bg);color:var(--accent);">${tag}</span>`).join(' ')}</div>` : ''}
-    ${t.rebuy === 'yes' ? '<div class="badge badge-success" style="margin-top:8px;">👍 会回购</div>' : t.rebuy === 'no' ? '<div class="badge badge-danger" style="margin-top:8px;">👎 不会回购</div>' : ''}
-  `, [
-    {text: '删除', class:'btn-danger', action:`deleteTasting('${t.id}')`},
-    {text: '分享', class:'btn-secondary', action:`shareTasting('${t.id}')`},
-    {text: '编辑', class:'btn-primary', action:`closeModal();editTasting('${t.id}')`}
-  ]);
-}
-
-function editTasting(id) { currentRating = db.tasting_logs.find(x=>x.id===id)?.rating||0; showTastingForm(id); }
-function deleteTasting(id) { if (!confirm('确定删除？')) return; db.tasting_logs = db.tasting_logs.filter(x => x.id !== id); saveDB(); closeModal(); renderPage(currentPage); showToast('已删除'); }
-
-function shareTasting(id) {
-  const t = db.tasting_logs.find(x => x.id === id); if (!t) return;
-  const canvas = document.createElement('canvas');
-  canvas.width = 600; canvas.height = 800;
-  const ctx = canvas.getContext('2d');
-  ctx.fillStyle = '#f5f0e8'; ctx.fillRect(0, 0, 600, 800);
-  ctx.fillStyle = '#2c2c2c'; ctx.font = 'bold 28px -apple-system, sans-serif';
-  ctx.fillText('☕ 品鉴卡片', 30, 60);
-  ctx.font = '22px -apple-system, sans-serif';
-  ctx.fillText(t.drinkName || '', 30, 110);
-  ctx.font = '16px -apple-system, sans-serif';
-  ctx.fillStyle = '#6b6b6b';
-  ctx.fillText(`📍 ${t.shopName||'自研'} · ${t.drinkDate||fmtDate(t.createdAt)}`, 30, 150);
-  if (t.rating) ctx.fillText(`${'★'.repeat(t.rating)}${'☆'.repeat(5-t.rating)}`, 30, 185);
-  ctx.font = '14px -apple-system, sans-serif';
-  ctx.fillText(t.notes?.substring(0, 100) || '', 30, 230);
-  ctx.fillStyle = '#8B6F47'; ctx.font = '12px -apple-system, sans-serif';
-  ctx.fillText('来自: 00的实验室', 30, 760);
-
-  const dataUrl = canvas.toDataURL('image/png');
-  const a = document.createElement('a');
-  a.href = dataUrl; a.download = `品鉴_${t.drinkName}_${fmtDate(Date.now())}.png`;
-  a.click(); showToast('图片已保存，可分享到小红书/抖音');
-}
-
-// ==================== INGREDIENTS MODULE ====================
-function renderIngredients() {
-  let html = `<h1 class="page-title">📦 原料库</h1><p class="page-subtitle">统一管理所有原料</p>`;
-
-  html += `<div class="filter-bar">`;
-  html += `<button class="filter-chip ${currentFilter===''?'active':''}" onclick="setIngFilter('')">全部</button>`;
-  INGREDIENT_CATEGORIES.forEach(c => {
-    html += `<button class="filter-chip ${currentFilter===c.key?'active':''}" onclick="setIngFilter('${c.key}')">${c.icon} ${c.name}</button>`;
-  });
-  html += `</div>`;
-
-  // Search
-  html += `<div class="form-inline" style="margin-bottom:12px;">
-    <input type="text" id="ing-search" placeholder="🔍 搜索原料..." oninput="renderPage('ingredients')" value="${currentFilter==='search'?'' : ''}">
-  </div>`;
-
-  const searchTerm = document.getElementById('ing-search')?.value?.trim()?.toLowerCase() || '';
-  let filtered = db.ingredients;
-  if (currentFilter && currentFilter !== 'search') filtered = filtered.filter(i => i.category === currentFilter);
-  if (searchTerm) filtered = filtered.filter(i => i.name.toLowerCase().includes(searchTerm));
-
-  if (filtered.length === 0) {
-    html += `<div class="empty-state"><div class="empty-state-icon">📦</div><div class="empty-state-text">还没有原料</div><div class="empty-state-hint">点击 + 添加第一种原料</div></div>`;
-    return html;
-  }
-
-  [...filtered].sort((a,b) => a.name.localeCompare(b.name)).forEach(ing => {
-    const cat = INGREDIENT_CATEGORIES.find(c => c.key === ing.category) || { name: '未分类', icon: '📦' };
-    const isExpiring = ing.expiryDate && new Date(ing.expiryDate) < new Date(Date.now() + 7*86400000);
-    html += `<div class="card" onclick="viewIngredient('${ing.id}')" style="cursor:pointer;">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
-        <div>
-          <div style="font-weight:700;">${cat.icon} ${ing.name}</div>
-          <div style="font-size:12px;color:var(--text-light);">${cat.name} · ${ing.spec||''}${ing.unit||''}</div>
-        </div>
-        <div style="text-align:right;">
-          <div style="color:var(--accent);font-weight:700;">¥${ing.price||0}/${ing.unit||'单位'}</div>
-          ${isExpiring ? '<span class="badge badge-warning">⚠ 临期</span>' : ''}
-          ${ing.stock !== undefined ? `<div style="font-size:12px;color:var(--text-light);">库存: ${ing.stock}</div>` : ''}
-        </div>
-      </div>
-    </div>`;
-  });
-
-  return html;
-}
-
-function setIngFilter(f) { currentFilter = f; renderPage('ingredients'); }
-
-function showIngredientForm(id) {
-  const ing = id ? db.ingredients.find(x => x.id === id) : {};
-
-  showModal(id ? '编辑原料' : '添加原料', `
-    <div class="form-group"><label>名称 *</label><input type="text" id="ing-name" value="${ing.name||''}" placeholder="如：埃塞俄比亚耶加雪菲"></div>
-    <div class="form-group"><label>分类</label><select id="ing-category">${INGREDIENT_CATEGORIES.map(c => `<option value="${c.key}" ${ing.category===c.key?'selected':''}>${c.icon} ${c.name}</option>`).join('')}</select></div>
-    <div class="form-row">
-      <div class="form-group"><label>规格</label><input type="number" id="ing-spec" value="${ing.spec||''}" placeholder="如：500" step="0.1"></div>
-      <div class="form-group"><label>单位</label><select id="ing-unit"><option value="g" ${ing.unit==='g'?'selected':''}>g</option><option value="ml" ${ing.unit==='ml'?'selected':''}>ml</option><option value="个" ${ing.unit==='个'?'selected':''}>个</option><option value="包" ${ing.unit==='包'?'selected':''}>包</option></select></div>
-    </div>
-    <div class="form-row">
-      <div class="form-group"><label>采购单价 ¥</label><input type="number" id="ing-price" value="${ing.price||''}" placeholder="如：89" step="0.01"></div>
-      <div class="form-group"><label>库存数量</label><input type="number" id="ing-stock" value="${ing.stock||''}" placeholder="如：3"></div>
-    </div>
-    <div class="form-row">
-      <div class="form-group"><label>保质期至</label><input type="date" id="ing-expiry" value="${ing.expiryDate||''}"></div>
-      <div class="form-group"><label>适配温度</label><select id="ing-temp"><option value="">不限</option><option value="cold" ${ing.temp==='cold'?'selected':''}>冷饮</option><option value="hot" ${ing.temp==='hot'?'selected':''}>热饮</option><option value="both" ${ing.temp==='both'?'selected':''}>均可</option></select></div>
-    </div>
-    <div class="form-group"><label>风味标签</label><input type="text" id="ing-flavors" value="${(ing.flavors||[]).join(', ')}" placeholder="如：酸, 果香, 花香"></div>
-    <div class="form-group"><label>风险标签</label><input type="text" id="ing-risks" value="${(ing.risks||[]).join(', ')}" placeholder="如：致敏, 易分层"></div>
-  `, [
-    {text: '取消', class:'btn-secondary', action:'closeModal()'},
-    {text: '保存', class:'btn-primary', action:`saveIngredient('${id||''}')`}
-  ]);
-}
-
-function saveIngredient(id) {
-  const name = document.getElementById('ing-name').value.trim();
-  if (!name) { showToast('请输入名称'); return; }
-  const flavorsStr = document.getElementById('ing-flavors').value.trim();
-  const risksStr = document.getElementById('ing-risks').value.trim();
-  const data = {
-    name, category: document.getElementById('ing-category').value,
-    spec: parseFloat(document.getElementById('ing-spec').value) || 0,
-    unit: document.getElementById('ing-unit').value,
-    price: parseFloat(document.getElementById('ing-price').value) || 0,
-    stock: parseInt(document.getElementById('ing-stock').value) || 0,
-    expiryDate: document.getElementById('ing-expiry').value,
-    temp: document.getElementById('ing-temp').value,
-    flavors: flavorsStr ? flavorsStr.split(/[,，]/).map(t => t.trim()).filter(Boolean) : [],
-    risks: risksStr ? risksStr.split(/[,，]/).map(t => t.trim()).filter(Boolean) : [],
-  };
-  if (id) {
-    const idx = db.ingredients.findIndex(x => x.id === id);
-    if (idx >= 0) db.ingredients[idx] = {...db.ingredients[idx], ...data};
-  } else {
-    data.id = genId(); data.createdAt = Date.now();
-    db.ingredients.push(data);
-  }
-  saveDB(); closeModal(); renderPage(currentPage); showToast(id ? '已更新' : '已添加');
-}
-
-function viewIngredient(id) {
-  const ing = db.ingredients.find(x => x.id === id); if (!ing) return;
-  const cat = INGREDIENT_CATEGORIES.find(c => c.key === ing.category) || { name: '未分类' };
-  const isExpiring = ing.expiryDate && new Date(ing.expiryDate) < new Date(Date.now() + 7*86400000);
-
-  showModal(ing.name, `
-    <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
-      <span class="recipe-card-tag tag-coffee">${cat.icon} ${cat.name}</span>
-      ${isExpiring ? '<span class="badge badge-warning">⚠ 临期</span>' : ''}
-      ${ing.temp ? `<span class="badge badge-success">${ing.temp==='cold'?'冷饮':ing.temp==='hot'?'热饮':'冷热均可'}</span>` : ''}
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:14px;margin-bottom:12px;">
-      <div><strong>规格:</strong> ${ing.spec}${ing.unit}</div>
-      <div><strong>单价:</strong> ¥${ing.price}/${ing.unit}</div>
-      <div><strong>库存:</strong> ${ing.stock||0}</div>
-      <div><strong>保质期:</strong> ${ing.expiryDate||'未设置'}</div>
-    </div>
-    ${ing.flavors?.length ? `<div style="margin-bottom:8px;"><strong>风味:</strong> ${ing.flavors.map(f => `<span class="tag" style="background:var(--accent-bg);color:var(--accent);">${f}</span>`).join(' ')}</div>` : ''}
-    ${ing.risks?.length ? `<div><strong>风险:</strong> ${ing.risks.map(r => `<span class="badge badge-danger">${r}</span>`).join(' ')}</div>` : ''}
-  `, [
-    {text: '删除', class:'btn-danger', action:`deleteIngredient('${ing.id}')`},
-    {text: '编辑', class:'btn-primary', action:`closeModal();editIngredient('${ing.id}')`}
-  ]);
-}
-
-function editIngredient(id) { showIngredientForm(id); }
-function deleteIngredient(id) { if (!confirm('确定删除？')) return; db.ingredients = db.ingredients.filter(x => x.id !== id); saveDB(); closeModal(); renderPage(currentPage); showToast('已删除'); }
-
-// ==================== TOOLS MODULE ====================
-function renderTools() {
-  let html = `<h1 class="page-title">🔧 实用工具</h1><p class="page-subtitle">萃取计算 · 成本核算 · 研发辅助</p>`;
-
-  html += `
-    <div class="tool-card" onclick="openBrewCalc()">
-      <div class="tool-card-icon">☕</div>
-      <div class="tool-card-body"><div class="tool-card-name">咖啡萃取计算器</div><div class="tool-card-desc">粉水比、水温、时间参数换算（冷萃/意式/手冲）</div></div>
-    </div>
-    <div class="tool-card" onclick="openSweetCalc()">
-      <div class="tool-card-icon">🍯</div>
-      <div class="tool-card-body"><div class="tool-card-name">甜度换算工具</div><div class="tool-card-desc">糖浆、果泥糖度换算，标准化少糖/正常糖/多糖</div></div>
-    </div>
-    <div class="tool-card" onclick="openCostCalc()">
-      <div class="tool-card-icon">💰</div>
-      <div class="tool-card-body"><div class="tool-card-name">成本计算器</div><div class="tool-card-desc">自动计算单杯物料成本与毛利率</div></div>
-    </div>
-    <div class="tool-card" onclick="openTrialLog()">
-      <div class="tool-card-icon">📋</div>
-      <div class="tool-card-body"><div class="tool-card-name">研发试错台账</div><div class="tool-card-desc">记录调试失败原因，沉淀避坑经验</div></div>
-    </div>
-    <div class="tool-card" onclick="openPlanTemplate()">
-      <div class="tool-card-icon">📝</div>
-      <div class="tool-card-body"><div class="tool-card-name">新品上新企划模板</div><div class="tool-card-desc">标准化新品上线流程</div></div>
-    </div>
-  `;
-
-  // Trial logs
-  if (db.tools_data.trial_logs?.length > 0) {
-    html += `<div class="section-title">📋 最近试错记录</div>`;
-    db.tools_data.trial_logs.slice(-3).reverse().forEach(log => {
-      html += `<div class="note-card"><div class="note-card-header"><div class="note-card-title">❌ ${log.title}</div><div class="note-card-date">${fmtDate(log.createdAt)}</div></div><div class="note-card-body">${log.content}</div></div>`;
-    });
-  }
-
-  return html;
-}
-
-function openBrewCalc() {
-  showModal('咖啡萃取计算器', `
-    <div class="form-group"><label>萃取方式</label><select id="brew-method" onchange="calcBrew()">
-      <option value="pour">手冲</option><option value="espresso">意式浓缩</option><option value="coldbrew">冷萃</option>
-    </select></div>
-    <div class="form-group"><label>咖啡粉量 (g)</label><input type="number" id="brew-dose" value="18" oninput="calcBrew()"></div>
-    <div class="form-group"><label>粉水比</label><input type="text" id="brew-ratio" value="1:16" oninput="calcBrew()"></div>
-    <div class="form-group"><label>水温 (°C)</label><input type="number" id="brew-temp" value="92"></div>
-    <div class="form-group"><label>萃取时间</label><input type="text" id="brew-time" value="2:30"></div>
-    <div class="card" style="background:var(--accent-bg);"><h4>计算结果</h4><div id="brew-result" style="margin-top:8px;font-size:14px;"></div></div>
-  `, [{text: '关闭', class:'btn-secondary', action:'closeModal()'}]);
-  setTimeout(calcBrew, 100);
-}
-
-function calcBrew() {
-  const dose = parseFloat(document.getElementById('brew-dose')?.value) || 18;
-  const ratioStr = document.getElementById('brew-ratio')?.value || '1:16';
-  const ratioParts = ratioStr.split(':');
-  const ratio = ratioParts.length === 2 ? parseFloat(ratioParts[1]) / parseFloat(ratioParts[0]) : 16;
-  const water = dose * ratio;
-  const method = document.getElementById('brew-method')?.value || 'pour';
-  const el = document.getElementById('brew-result');
-  if (el) el.innerHTML = `
-    <div>☕ 咖啡粉: <strong>${dose}g</strong></div>
-    <div>💧 注水量: <strong>${water.toFixed(0)}ml</strong></div>
-    <div>📐 粉水比: <strong>1:${ratio}</strong></div>
-    <div style="margin-top:8px;font-size:12px;color:var(--text-light);">${method==='pour'?'建议闷蒸30秒，分段注水':method==='espresso'?'建议9bar压力，25-30秒':method==='coldbrew'?'建议冷藏浸泡12-16小时'}</div>
-  `;
-}
-
-function openSweetCalc() {
-  showModal('甜度换算工具', `
-    <div class="form-group"><label>糖浆类型</label><select id="sweet-type"><option value="simple">简易糖浆 (1:1)</option><option value="rich">浓糖浆 (2:1)</option><option value="fruit">果泥</option></select></div>
-    <div class="form-group"><label>正常糖用量 (ml)</label><input type="number" id="sweet-normal" value="20" oninput="calcSweet()"></div>
-    <div class="card" style="background:var(--accent-bg);"><h4>换算结果</h4><div id="sweet-result" style="margin-top:8px;font-size:14px;"></div></div>
-  `, [{text: '关闭', class:'btn-secondary', action:'closeModal()'}]);
-  setTimeout(calcSweet, 100);
-}
-
-function calcSweet() {
-  const normal = parseFloat(document.getElementById('sweet-normal')?.value) || 20;
-  const type = document.getElementById('sweet-type')?.value || 'simple';
-  const el = document.getElementById('sweet-result');
-  if (el) el.innerHTML = `
-    <div>🍬 多糖 (120%): <strong>${(normal*1.2).toFixed(1)}ml</strong></div>
-    <div>🍬 正常糖 (100%): <strong>${normal}ml</strong></div>
-    <div>🍬 少糖 (70%): <strong>${(normal*0.7).toFixed(1)}ml</strong></div>
-    <div>🍬 半糖 (50%): <strong>${(normal*0.5).toFixed(1)}ml</strong></div>
-    <div>🍬 微糖 (30%): <strong>${(normal*0.3).toFixed(1)}ml</strong></div>
-    <div style="margin-top:4px;font-size:12px;color:var(--text-light);">${type==='simple'?'简易糖浆甜度约为蔗糖的80%':type==='rich'?'浓糖浆甜度约为蔗糖的120%':'果泥甜度视品种而定，建议试饮调整'}</div>
-  `;
-}
-
-function openCostCalc() {
-  let recipeOptions = db.recipes.map(r => `<option value="${r.id}">${r.name} (¥${r.price||0})</option>`).join('');
-  showModal('成本计算器', `
-    <div class="form-group"><label>选择配方</label><select id="cost-recipe" onchange="calcCostDetail()"><option value="">-- 选择 --</option>${recipeOptions}</select></div>
-    <div class="card" style="background:var(--accent-bg);"><h4>成本明细</h4><div id="cost-detail" style="margin-top:8px;font-size:14px;"></div></div>
-    <div class="form-group" style="margin-top:12px;"><label>批量杯数</label><input type="number" id="cost-batch" value="10" min="1" onchange="calcCostDetail()"></div>
-    <div id="cost-batch-result" style="font-size:14px;"></div>
-  `, [{text: '关闭', class:'btn-secondary', action:'closeModal()'}]);
-}
-
-function calcCostDetail() {
-  const recipeId = document.getElementById('cost-recipe')?.value;
-  const batch = parseInt(document.getElementById('cost-batch')?.value) || 10;
-  const r = recipeId ? db.recipes.find(x => x.id === recipeId) : null;
-  const detailEl = document.getElementById('cost-detail');
-  const batchEl = document.getElementById('cost-batch-result');
-  if (!r) {
-    if (detailEl) detailEl.innerHTML = '请选择一个配方';
-    if (batchEl) batchEl.innerHTML = '';
-    return;
-  }
-  let detailHtml = '';
-  (r.ingredients||[]).forEach(ing => {
-    const matched = db.ingredients.find(i => i.name === ing.name);
-    const unitPrice = matched ? (matched.price / (matched.spec||1)) : 0;
-    const amt = parseFloat(ing.amount) || 0;
-    const cost = amt * unitPrice;
-    detailHtml += `<div style="display:flex;justify-content:space-between;margin:4px 0;"><span>${ing.name} ${ing.amount}${ing.unit||''}</span><span>¥${cost.toFixed(2)}</span></div>`;
-  });
-  const total = r.cost || calcCost(r.ingredients||[]);
-  detailHtml += `<div style="display:flex;justify-content:space-between;margin-top:8px;font-weight:700;color:var(--accent);"><span>物料成本</span><span>¥${total.toFixed(2)}</span></div>`;
-  detailHtml += `<div style="display:flex;justify-content:space-between;"><span>建议售价</span><span>¥${(r.price||0).toFixed(1)}</span></div>`;
-  if (r.price > 0) detailHtml += `<div style="display:flex;justify-content:space-between;font-weight:700;color:var(--success);"><span>毛利率</span><span>${((r.price-total)/r.price*100).toFixed(0)}%</span></div>`;
-  if (detailEl) detailEl.innerHTML = detailHtml;
-  if (batchEl) batchEl.innerHTML = `<div class="card" style="margin-top:8px;background:var(--accent-bg);"><strong>${batch}杯批量备货:</strong> 总物料成本 <strong>¥${(total*batch).toFixed(2)}</strong>，预计营收 <strong>¥${((r.price||0)*batch).toFixed(1)}</strong></div>`;
-}
-
-function openTrialLog() {
-  showModal('新建试错记录', `
-    <div class="form-group"><label>标题</label><input type="text" id="trial-title" placeholder="如：草莓糖浆浓度过高导致分层"></div>
-    <div class="form-group"><label>失败原因</label><textarea id="trial-content" placeholder="详细记录失败原因、现象、改进方案..."></textarea></div>
-  `, [
-    {text: '取消', class:'btn-secondary', action:'closeModal()'},
-    {text: '保存', class:'btn-primary', action:`saveTrialLog()`}
-  ]);
-}
-
-function saveTrialLog() {
-  const title = document.getElementById('trial-title').value.trim();
-  const content = document.getElementById('trial-content').value.trim();
-  if (!title || !content) { showToast('请填写标题和内容'); return; }
-  if (!db.tools_data.trial_logs) db.tools_data.trial_logs = [];
-  db.tools_data.trial_logs.push({ id: genId(), title, content, createdAt: Date.now() });
-  saveDB(); closeModal(); renderPage(currentPage); showToast('已记录');
-}
-
-function openPlanTemplate() {
-  showModal('新品上新企划模板', `
-    <div style="font-size:14px;line-height:1.8;">
-      <h4>📋 新品企划清单</h4>
-      <p>1. 产品名称 & 概念定位</p>
-      <p>2. 目标客群 & 预期售价</p>
-      <p>3. 原料清单 & 供应链确认</p>
-      <p>4. 配方研发计划 (v1→v3迭代)</p>
-      <p>5. 内部测试时间表</p>
-      <p>6. 成本核算 & 毛利率预估</p>
-      <p>7. SOP标准化文档</p>
-      <p>8. 上市推广计划</p>
-      <p>9. 客户反馈收集方案</p>
-      <p>10. 迭代优化计划</p>
-    </div>
-  `, [{text: '关闭', class:'btn-secondary', action:'closeModal()'}]);
-}
-
-// ==================== COMMUNITY MODULE ====================
-function renderCommunity() {
-  let html = `<h1 class="page-title">💡 灵感社区</h1><p class="page-subtitle">素材库 · 行业趋势 · 创意灵感</p>`;
-
-  // Seasonal ingredients
-  const now = new Date();
-  const month = now.getMonth() + 1;
-  const seasonalItems = {
-    1: ['草莓🍓', '柑橘🍊', '栗子🌰'],
-    2: ['草莓🍓', '巧克力🍫', '抹茶🍵'],
-    3: ['樱花🌸', '草莓🍓', '抹茶🍵'],
-    4: ['樱花🌸', '蜜桃🍑', '茉莉花🌼'],
-    5: ['蜜桃🍑', '荔枝', '薄荷🌿'],
-    6: ['西瓜🍉', '蜜桃🍑', '椰子🥥'],
-    7: ['西瓜🍉', '芒果🥭', '椰子🥥'],
-    8: ['芒果🥭', '蜜桃🍑', '青柠🍋'],
-    9: ['桂花🌺', '柚子', '栗子🌰'],
-    10: ['桂花🌺', '南瓜🎃', '肉桂'],
-    11: ['栗子🌰', '南瓜🎃', '红薯🍠'],
-    12: ['栗子🌰', '巧克力🍫', '肉桂'],
-  };
-
-  html += `<div class="card"><h4 style="margin-bottom:8px;">🌸 ${month}月时令食材</h4><div style="display:flex;gap:8px;flex-wrap:wrap;">${(seasonalItems[month]||['暂无']).map(s => `<span class="tag" style="background:var(--accent-bg);color:var(--accent);font-size:14px;padding:8px 14px;">${s}</span>`).join('')}</div></div>`;
-
-  // Trends
-  html += `<div class="card"><h4 style="margin-bottom:8px;">🔥 2026饮品流行趋势</h4>
-    <div style="font-size:13px;line-height:1.8;">
-      <p>🌿 <strong>草本特调</strong> — 罗勒、迷迭香、薰衣草入饮</p>
-      <p>🧋 <strong>新中式茶咖</strong> — 乌龙+浓缩、普洱+奶盖</p>
-      <p>🍋 <strong>发酵风味</strong> — 康普茶、酵素特调</p>
-      <p>🥜 <strong>坚果奶基底</strong> — 巴旦木、燕麦、开心果奶</p>
-      <p>❄️ <strong>氮气冷萃</strong> — 绵密口感，视觉冲击</p>
-    </div>
-  </div>`;
-
-  // Naming library
-  html += `<div class="card"><h4 style="margin-bottom:8px;">📝 饮品命名灵感库</h4>
-    <div style="font-size:13px;line-height:1.8;">
-      <p>🌅 <strong>意境类</strong>: 落日飞车、晨雾、夏夜晚风、山海</p>
-      <p>🌸 <strong>花果类</strong>: 桂雨、桃醉、玫珑、栀子白</p>
-      <p>🏔️ <strong>地名类</strong>: 北海道、云南、哥伦比亚、埃塞</p>
-      <p>🎨 <strong>色彩类</strong>: 琥珀、墨染、绯红、青岚</p>
-    </div>
-  </div>`;
-
-  // Copy library
-  html += `<div class="card"><h4 style="margin-bottom:8px;">✍️ 宣传文案灵感</h4>
-    <div style="font-size:13px;line-height:1.8;">
-      <p>"一口入夏，满杯果香" — 水果茶系列</p>
-      <p>"每一杯，都是实验室的答案" — 研发系列</p>
-      <p>"用一杯咖啡的时间，逃逸日常" — 氛围系列</p>
-      <p>"你喝的不是咖啡，是云南的山风" — 产地系列</p>
-    </div>
-  </div>`;
-
-  // Knowledge base
-  html += `<div class="card"><h4 style="margin-bottom:8px;">📚 行业干货</h4>
-    <div style="font-size:13px;line-height:1.8;">
-      <p>☕ <strong>萃取原理</strong>: 温度、研磨度、时间三要素</p>
-      <p>🧊 <strong>冰块管理</strong>: 大冰慢融、碎冰快冷</p>
-      <p>🥛 <strong>奶泡技巧</strong>: 全脂奶60-65°C最佳</p>
-      <p>🍯 <strong>糖浆自制</strong>: 1:1糖水比煮沸，冷藏保存</p>
-    </div>
-  </div>`;
-
-  return html;
-}
-
-// ==================== PHOTOS & NOTES (legacy) ====================
-function renderNoteCard(n) {
-  return `
-    <div class="note-card">
-      <div class="note-card-header"><div class="note-card-title">${n.title}</div><div class="note-card-date">${fmtDate(n.createdAt)}</div></div>
-      <div class="note-card-body">${n.content}</div>
-      ${n.tags?.length ? `<div class="note-card-tags">${n.tags.map(t => `<span class="tag" style="background:var(--accent-bg);color:var(--accent);">${t}</span>`).join('')}</div>` : ''}
-      <div class="note-card-actions">
-        <button class="btn btn-sm btn-secondary" onclick="event.stopPropagation();editNote('${n.id}')">编辑</button>
-        <button class="btn btn-sm btn-danger" onclick="event.stopPropagation();deleteNote('${n.id}')">删除</button>
-      </div>
-    </div>
-  `;
-}
-
-function showNoteForm(id) {
-  const n = id ? db.notes.find(x => x.id === id) : {};
-  showModal(id ? '编辑笔记' : '写笔记', `
-    <div class="form-group"><label>标题</label><input type="text" id="n-title" value="${n.title||''}" placeholder="如：草莓糖浆浓度调整"></div>
-    <div class="form-group"><label>内容</label><textarea id="n-content" style="min-height:200px;">${n.content||''}</textarea></div>
-    <div class="form-group"><label>标签</label><input type="text" id="n-tags" value="${n.tags ? n.tags.join(', ') : ''}" placeholder="如：糖浆, 分层"></div>
-  `, [
-    {text: '取消', class:'btn-secondary', action:'closeModal()'},
-    {text: '保存', class:'btn-primary', action:`saveNote('${id||''}')`}
-  ]);
-}
-
-function saveNote(id) {
-  const title = document.getElementById('n-title').value.trim();
-  const content = document.getElementById('n-content').value.trim();
-  if (!title || !content) { showToast('请填写标题和内容'); return; }
-  const tagsStr = document.getElementById('n-tags').value.trim();
-  const data = { title, content, tags: tagsStr ? tagsStr.split(/[,，]/).map(t => t.trim()).filter(Boolean) : [] };
-  if (id) { const idx = db.notes.findIndex(x => x.id === id); if (idx >= 0) db.notes[idx] = {...db.notes[idx], ...data}; }
-  else { data.id = genId(); data.createdAt = Date.now(); db.notes.push(data); }
-  saveDB(); closeModal(); renderPage(currentPage); showToast(id ? '已更新' : '已添加');
-}
-
-function editNote(id) { showNoteForm(id); }
-function deleteNote(id) { if (!confirm('确定删除？')) return; db.notes = db.notes.filter(x => x.id !== id); saveDB(); renderPage(currentPage); showToast('已删除'); }
-
-// ==================== FAB HANDLER ====================
-function handleFab() {
-  switch(currentPage) {
-    case 'dashboard': navigate('recipes'); setTimeout(() => showRecipeForm(), 300); break;
-    case 'recipes': showRecipeForm(); break;
-    case 'tasting': showTastingForm(); break;
-    case 'ingredients': showIngredientForm(); break;
-    case 'tools': navigate('recipes'); setTimeout(() => showRecipeForm(), 300); break;
-    case 'community': navigate('tasting'); setTimeout(() => showTastingForm(), 300); break;
-    default: showRecipeForm(); break;
-  }
-}
-
-// ==================== MODAL ====================
-function showModal(title, body, footerButtons) {
-  document.getElementById('modal-title').textContent = title;
-  document.getElementById('modal-body').innerHTML = body;
-  let footerHtml = '';
-  footerButtons.forEach(btn => footerHtml += `<button class="btn ${btn.class}" onclick="${btn.action}">${btn.text}</button>`);
-  document.getElementById('modal-footer').innerHTML = footerHtml;
-  document.getElementById('modal-overlay').classList.add('active');
-}
-
-function closeModal() {
-  document.getElementById('modal-overlay').classList.remove('active');
-  currentRating = 0; currentPhotoData = '';
-}
-
-// ==================== SIDEBAR ====================
-function toggleSidebar(force) {
-  const sb = document.getElementById('sidebar');
-  if (typeof force === 'boolean') sb.classList.toggle('open', force);
-  else sb.classList.toggle('open');
-}
-
-// ==================== TOAST ====================
-function showToast(msg) {
-  const existing = document.querySelector('.toast');
-  if (existing) existing.remove();
-  const toast = document.createElement('div');
-  toast.className = 'toast'; toast.textContent = msg;
-  document.body.appendChild(toast);
-  setTimeout(() => toast.classList.add('show'), 10);
-  setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 300); }, 2000);
-}
-
-// ==================== IMPORT/EXPORT ====================
-function exportData() {
-  const data = JSON.stringify(db, null, 2);
-  const blob = new Blob([data], {type:'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = `00的实验室_${fmtDate(Date.now())}.json`;
-  a.click(); URL.revokeObjectURL(url); showToast('数据已导出');
-}
-
-function importData() { document.getElementById('import-file').click(); }
-function handleImport(event) {
-  const file = event.target.files[0]; if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    try {
-      const data = JSON.parse(e.target.result);
-      if (data.recipes !== undefined) {
-        if (confirm('导入将覆盖现有数据，确定继续？')) { db = data; saveDB(); renderPage(currentPage); showToast('数据已导入'); }
-      } else showToast('文件格式不正确');
-    } catch(err) { showToast('导入失败'); }
-  };
-  reader.readAsText(file); event.target.value = '';
-}
-
-// ==================== INIT ====================
-document.addEventListener('DOMContentLoaded', function() {
-  try {
-    loadDB();
-    buildNav();
-    navigate('dashboard');
-
-    // Restore theme
-    if (db.settings.theme === 'dark') {
-      document.body.classList.add('dark');
-      const themeBtn = document.getElementById('theme-btn');
-      if (themeBtn) themeBtn.textContent = '☀️';
-    }
-
-    // Sidebar nav clicks
-    document.addEventListener('click', function(e) {
-      const navItem = e.target.closest('.nav-item');
-      if (navItem) {
-        e.preventDefault();
-        navigate(navItem.dataset.page);
-      }
-    });
-
-    // Modal overlay click
-    const modalOverlay = document.getElementById('modal-overlay');
-    if (modalOverlay) {
-      modalOverlay.addEventListener('click', function(e) {
-        if (e.target === this) closeModal();
-      });
-    }
-
-    // Escape key
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') closeModal();
-    });
-
-    updateStorageInfo();
-
-    // Restore sync button
-    if (syncEnabled) {
-      const btn = document.getElementById('btn-sync');
-      if (btn) { btn.textContent = '☁️ 同步中'; btn.classList.add('active'); }
-      syncFromCloud().then(changed => { if (changed) renderPage(currentPage); });
-    }
-
-    // Service Worker
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js').catch(() => {});
-    }
-  } catch (err) {
-    console.error('Init error:', err);
-    document.getElementById('main-content').innerHTML = '<div style="padding:40px;text-align:center;"><h2>加载出错</h2><p style="color:#999;">' + err.message + '</p><button onclick="location.reload()" style="margin-top:20px;padding:10px 20px;border:none;border-radius:8px;background:#8B6F47;color:white;">刷新重试</button></div>';
-  }
-});
+// 页面初始化
+loadData();
 </script>
 </body>
 </html>
